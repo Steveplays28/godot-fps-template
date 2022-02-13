@@ -39,6 +39,9 @@ mass = 80.0
 physics_material_override = ExtResource( 5 )
 continuous_cd = true
 can_sleep = false
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
 script = ExtResource( 3 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Player"]
