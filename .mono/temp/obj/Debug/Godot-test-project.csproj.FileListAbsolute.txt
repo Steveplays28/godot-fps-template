@@ -1,8 +1,0 @@
-/Users/darion/Repos/Godot-test-project/.mono/temp/obj/Debug/Godot-test-project.csprojAssemblyReference.cache
-/Users/darion/Repos/Godot-test-project/.mono/temp/obj/Debug/Godot-test-project.AssemblyInfoInputs.cache
-/Users/darion/Repos/Godot-test-project/.mono/temp/obj/Debug/Godot-test-project.AssemblyInfo.cs
-/Users/darion/Repos/Godot-test-project/.mono/temp/obj/Debug/Godot-test-project.csproj.CoreCompileInputs.cache
-/Users/darion/Repos/Godot-test-project/.mono/temp/bin/Debug/Godot-test-project.dll
-/Users/darion/Repos/Godot-test-project/.mono/temp/bin/Debug/Godot-test-project.pdb
-/Users/darion/Repos/Godot-test-project/.mono/temp/obj/Debug/Godot-test-project.dll
-/Users/darion/Repos/Godot-test-project/.mono/temp/obj/Debug/Godot-test-project.pdb
