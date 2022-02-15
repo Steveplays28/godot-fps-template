@@ -14,20 +14,20 @@ public class PlayerController : RigidBody
 	public Vector3 linearVelocityLocal { get; private set; } = Vector3.Zero;
 
 	public Camera camera;
-	public MeshInstance meshInstance;
+	public CollisionShape collisionShape;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		Input.SetMouseMode(Input.MouseMode.Captured);
 
-		camera = GetNode<Camera>("./MeshInstance/Camera");
-		meshInstance = GetNode<MeshInstance>("./MeshInstance");
+		camera = GetNode<Camera>("./CollisionShape/Camera");
+		collisionShape = GetNode<CollisionShape>("./CollisionShape");
 	}
 
 	public override void _Process(float delta)
 	{
-		Vector3 globalRotation = GlobalTransform.basis.GetEuler();
+		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
 		linearVelocityLocal = LinearVelocity.Rotated(Vector3.Up, -globalRotation.y);
 
 		if (Input.IsActionJustReleased("restart"))
@@ -46,19 +46,19 @@ public class PlayerController : RigidBody
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -meshInstance.GlobalTransform.basis.z * 2500f * (isSprinting ? 2f : 1f);
+				moveDirection += -collisionShape.GlobalTransform.basis.z * 2500f * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += meshInstance.GlobalTransform.basis.z * 2500f;
+				moveDirection += collisionShape.GlobalTransform.basis.z * 2500f;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += meshInstance.GlobalTransform.basis.x * 2500f;
+				moveDirection += collisionShape.GlobalTransform.basis.x * 2500f;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -meshInstance.GlobalTransform.basis.x * 2500f;
+				moveDirection += -collisionShape.GlobalTransform.basis.x * 2500f;
 			}
 		}
 		else
@@ -88,7 +88,7 @@ public class PlayerController : RigidBody
 	{
 		PhysicsDirectSpaceState spaceState = GetWorld().DirectSpaceState;
 
-		Vector3 globalRotation = meshInstance.GlobalTransform.basis.GetEuler();
+		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
 
 		// Use global coordinates instead of local coordinates for raycasts
 		// Right side raycast
@@ -103,6 +103,7 @@ public class PlayerController : RigidBody
 		else
 		{
 			GravityScale = 1f;
+			wallrunDirection = GlobalTransform.basis.z;
 		}
 
 		if (raycastResultRight.Contains("normal"))
@@ -113,7 +114,7 @@ public class PlayerController : RigidBody
 
 			if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
 			{
-				meshInstance.RotateY(Mathf.Deg2Rad(-0.25f * linearVelocityLocal.z));
+				collisionShape.RotateY(Mathf.Deg2Rad(0.05f * linearVelocityLocal.z));
 			}
 			else
 			{
@@ -129,13 +130,6 @@ public class PlayerController : RigidBody
 		}
 
 		// Left side raycast
-		// Godot.Collections.Dictionary raycastResultLeft = spaceState.IntersectRay(GlobalTransform.origin, GlobalTransform.origin + new Vector3(-5f, 0f, 0f));
-		// if (raycastResultLeft.Contains("normal"))
-		// {
-		// 	Vector3 normalLeft = (Vector3)raycastResultLeft["normal"];
-		// 	wallrunDirection = normalLeft.Rotated(Vector3.Up, Mathf.Rad2Deg(-90f));
-		// 	isWallrunning = true;
-		// }
 	}
 
 	public override void _Input(InputEvent inputEvent)
@@ -146,7 +140,7 @@ public class PlayerController : RigidBody
 			var inputEventMouseMotion = inputEvent as InputEventMouseMotion;
 
 			camera.RotateX(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.y * sensitivity.x));
-			meshInstance.RotateY(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.x * sensitivity.y));
+			collisionShape.RotateY(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.x * sensitivity.y));
 
 			Vector3 cameraRotationClamped = camera.RotationDegrees;
 			cameraRotationClamped.x = Mathf.Clamp(cameraRotationClamped.x, -maxRotationXDegrees, maxRotationXDegrees);
