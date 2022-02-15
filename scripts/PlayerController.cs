@@ -11,6 +11,7 @@ public class PlayerController : RigidBody
 	public bool isWallrunning { get; private set; } = false;
 	public Vector3 wallrunDirection { get; private set; } = Vector3.Zero;
 	public Vector3 wallrunDirectionLastFrame { get; private set; } = Vector3.Zero;
+	public Vector3 wallrunDirectionChange { get; private set; } = Vector3.Zero;
 	public Vector3 linearVelocityLocal { get; private set; } = Vector3.Zero;
 
 	public Camera camera;
@@ -65,19 +66,19 @@ public class PlayerController : RigidBody
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -wallrunDirection * 2500f * (isSprinting ? 2f : 1f);
+				moveDirection += -wallrunDirection * 2500f * 2f * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += wallrunDirection * 2500f;
+				moveDirection += wallrunDirection * 2500f * 2f;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += wallrunDirection * 2500f;
+				moveDirection += wallrunDirection * 2500f * 2f;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -wallrunDirection * 2500f;
+				moveDirection += -wallrunDirection * 2500f * 2f;
 			}
 		}
 
@@ -104,6 +105,7 @@ public class PlayerController : RigidBody
 		{
 			GravityScale = 1f;
 			wallrunDirection = GlobalTransform.basis.z;
+			wallrunDirectionChange = Vector3.Zero;
 		}
 
 		if (raycastResultRight.Contains("normal"))
@@ -114,15 +116,27 @@ public class PlayerController : RigidBody
 
 			if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
 			{
-				collisionShape.RotateY(Mathf.Deg2Rad(0.05f * linearVelocityLocal.z));
+				if (linearVelocityLocal.z <= 0)
+				{
+					// Custom gravity
+					AddCentralForce(-normalRight * -wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
+
+					wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
+					collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * 0.04f));
+				}
+				else
+				{
+					// Custom gravity
+					AddCentralForce(-normalRight * wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
+
+					wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
+					collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * 0.04f));
+				}
 			}
 			else
 			{
 				wallrunDirectionLastFrame = normalRight.Rotated(Vector3.Up, Mathf.Deg2Rad(90f));
 			}
-
-			// Custom gravity
-			AddCentralForce(-normalRight * 2500f);
 		}
 		else
 		{
