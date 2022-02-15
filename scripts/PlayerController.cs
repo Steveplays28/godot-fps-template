@@ -36,7 +36,12 @@ public class PlayerController : RigidBody
 			GetTree().ReloadCurrentScene();
 		}
 
-		Vector3 moveDirection = -LinearVelocity * 100f;
+		if (Input.IsActionJustPressed("jump"))
+		{
+			AddCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
+		}
+
+		Vector3 moveDirection = new Vector3(-LinearVelocity.x, 0f, -LinearVelocity.z) * 100f;
 		isSprinting = false;
 		if (Input.IsActionPressed("sprint"))
 		{
