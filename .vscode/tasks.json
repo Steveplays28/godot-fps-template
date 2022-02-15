@@ -1,0 +1,42 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"command": "/Applications/Godot (mono).app/Contents/MacOS/Godot",
+			"type": "process",
+			"args": [
+				"--build-solutions",
+				"--path",
+				"${workspaceRoot}",
+				"--no-window",
+				"-q"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "publish",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"publish",
+				"${workspaceFolder}/godot-fps-template.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "watch",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"run",
+				"--project",
+				"${workspaceFolder}/godot-fps-template.csproj"
+			],
+			"problemMatcher": "$msCompile"
+		}
+	]
+}
