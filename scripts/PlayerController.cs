@@ -8,7 +8,8 @@ public class PlayerController : RigidBody
 	[Export] public int wallrunShapeId = 1;
 
 	public bool isSprinting { get; private set; } = false;
-	public bool isWallrunning { get; private set; } = false;
+	public bool isWallrunningRightSide { get; private set; } = false;
+	public bool isWallrunningLeftSide { get; private set; } = false;
 	public Vector3 wallrunDirection { get; private set; } = Vector3.Zero;
 	public Vector3 wallrunDirectionLastFrame { get; private set; } = Vector3.Zero;
 	public Vector3 wallrunDirectionChange { get; private set; } = Vector3.Zero;
@@ -48,7 +49,7 @@ public class PlayerController : RigidBody
 			isSprinting = true;
 		}
 
-		if (!isWallrunning)
+		if (!isWallrunningRightSide && !isWallrunningLeftSide)
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
@@ -67,11 +68,12 @@ public class PlayerController : RigidBody
 				moveDirection += -collisionShape.GlobalTransform.basis.x * 2500f;
 			}
 		}
-		else
+		else if (isWallrunningRightSide || isWallrunningLeftSide)
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
 				moveDirection += -wallrunDirection * 2500f * 2f * (isSprinting ? 2f : 1f);
+				GD.Print("e");
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
@@ -102,53 +104,34 @@ public class PlayerController : RigidBody
 			GlobalTransform.origin + new Vector3(5f, 0f, 0f).Rotated(Vector3.Up, globalRotation.y),
 			new Godot.Collections.Array { this });
 
-		if (raycastResultRight.Count > 0)
-		{
-			GravityScale = 0f;
-		}
-		else
-		{
-			GravityScale = 1f;
-			wallrunDirection = GlobalTransform.basis.z;
-			wallrunDirectionChange = Vector3.Zero;
-		}
-
+		Vector3 normalRight = Vector3.Zero;
 		if (raycastResultRight.Contains("normal"))
 		{
-			Vector3 normalRight = (Vector3)raycastResultRight["normal"];
-			wallrunDirection = normalRight.Rotated(Vector3.Up, Mathf.Deg2Rad(90f));
-			isWallrunning = true;
-
-			if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
-			{
-				if (linearVelocityLocal.z <= 0)
-				{
-					// Custom gravity
-					AddCentralForce(-normalRight * -wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
-
-					wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-					collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * 0.04f));
-				}
-				else
-				{
-					// Custom gravity
-					AddCentralForce(-normalRight * wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
-
-					wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-					collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * 0.04f));
-				}
-			}
-			else
-			{
-				wallrunDirectionLastFrame = normalRight.Rotated(Vector3.Up, Mathf.Deg2Rad(90f));
-			}
+			normalRight = (Vector3)raycastResultRight["normal"];
+			StartWallrun(false, normalRight);
+			Wallrun(false, normalRight);
 		}
 		else
 		{
-			isWallrunning = false;
+			StopWallrun(false, normalRight);
 		}
 
 		// Left side raycast
+		Godot.Collections.Dictionary raycastResultLeft = spaceState.IntersectRay(GlobalTransform.origin,
+			GlobalTransform.origin + new Vector3(-5f, 0f, 0f).Rotated(Vector3.Up, globalRotation.y),
+			new Godot.Collections.Array { this });
+
+		Vector3 normalLeft = Vector3.Zero;
+		if (raycastResultLeft.Contains("normal"))
+		{
+			normalLeft = (Vector3)raycastResultLeft["normal"];
+			StartWallrun(true, normalLeft);
+			Wallrun(true, normalLeft);
+		}
+		else
+		{
+			StopWallrun(true, normalLeft);
+		}
 	}
 
 	public override void _Input(InputEvent inputEvent)
@@ -167,5 +150,80 @@ public class PlayerController : RigidBody
 		}
 
 		base._Input(inputEvent);
+	}
+
+	private void StartWallrun(bool leftSide, Vector3 normal)
+	{
+		if (isWallrunningRightSide || isWallrunningLeftSide)
+		{
+			// Already wallrunning
+			return;
+		}
+		else
+		{
+			// Not wallrunning yet, start wallrun
+			wallrunDirectionChange = Vector3.Zero;
+			GravityScale = 0f;
+			isWallrunningLeftSide = leftSide;
+			isWallrunningRightSide = !leftSide;
+			GD.Print("start wallrun");
+
+			// Play effects and animations here
+		}
+
+	}
+
+	private void Wallrun(bool leftSide, Vector3 normal)
+	{
+		float wallrunSideMultiplier = leftSide ? -1f : 1f;
+
+		wallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
+
+		if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
+		{
+			if (linearVelocityLocal.z <= 0)
+			{
+				// Custom gravity
+				AddCentralForce(-normal * -wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
+
+				wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
+				collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 0.04f));
+			}
+			else
+			{
+				// Custom gravity
+				AddCentralForce(-normal * wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
+
+				wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
+				collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 0.04f));
+			}
+		}
+		else
+		{
+			wallrunDirectionLastFrame = wallrunDirection;
+		}
+	}
+
+	private void StopWallrun(bool leftSide, Vector3 normal)
+	{
+		if (isWallrunningRightSide && !leftSide)
+		{
+			// Stop wallrunning on the right side
+			wallrunDirectionChange = Vector3.Zero;
+			GravityScale = 1f;
+			isWallrunningRightSide = false;
+			GD.Print("stop wallrun");
+
+			// Play effects and animations here
+		}
+		else if (isWallrunningLeftSide && leftSide)
+		{
+			// Stop wallrunning on the left side
+			wallrunDirectionChange = Vector3.Zero;
+			GravityScale = 1f;
+			isWallrunningLeftSide = false;
+
+			// Play effects and animations here
+		}
 	}
 }
