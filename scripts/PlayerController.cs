@@ -13,6 +13,7 @@ public class PlayerController : RigidBody
 	public Vector3 wallrunDirection { get; private set; } = Vector3.Zero;
 	public Vector3 wallrunDirectionLastFrame { get; private set; } = Vector3.Zero;
 	public Vector3 wallrunDirectionChange { get; private set; } = Vector3.Zero;
+	public Vector3 wallNormal { get; private set; } = Vector3.Zero;
 	public Vector3 linearVelocityLocal { get; private set; } = Vector3.Zero;
 
 	public Camera camera;
@@ -39,7 +40,7 @@ public class PlayerController : RigidBody
 
 		if (Input.IsActionJustPressed("jump"))
 		{
-			AddCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
+			Jump();
 		}
 
 		Vector3 moveDirection = new Vector3(-LinearVelocity.x, 0f, -LinearVelocity.z) * 100f;
@@ -177,6 +178,7 @@ public class PlayerController : RigidBody
 	{
 		float wallrunSideMultiplier = leftSide ? -1f : 1f;
 
+		wallNormal = normal;
 		wallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 
 		if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
@@ -224,6 +226,18 @@ public class PlayerController : RigidBody
 			isWallrunningLeftSide = false;
 
 			// Play effects and animations here
+		}
+	}
+
+	public void Jump()
+	{
+		if (isWallrunningLeftSide || isWallrunningRightSide)
+		{
+			AddCentralForce(wallNormal * 25000f);
+		}
+		else
+		{
+			AddCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
 		}
 	}
 }
