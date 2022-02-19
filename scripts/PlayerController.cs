@@ -5,7 +5,8 @@ public class PlayerController : RigidBody
 {
 	[Export] public float maxRotationXDegrees = 90f;
 	[Export] public Vector2 sensitivity = new Vector2(0.5f, 0.5f);
-	[Export] public int wallrunShapeId = 1;
+	[Export] public int maxJumps = 2;
+	[Export] public float wallrunTimeout = 2f;
 
 	public bool isSprinting { get; private set; } = false;
 	public bool isWallrunningRightSide { get; private set; } = false;
@@ -14,7 +15,9 @@ public class PlayerController : RigidBody
 	public Vector3 wallrunDirectionLastFrame { get; private set; } = Vector3.Zero;
 	public Vector3 wallrunDirectionChange { get; private set; } = Vector3.Zero;
 	public Vector3 wallNormal { get; private set; } = Vector3.Zero;
+	public float timeUntilNextWallrun { get; private set; } = 0f;
 	public Vector3 linearVelocityLocal { get; private set; } = Vector3.Zero;
+	public int jumpsLeft;
 
 	public Camera camera;
 	public CollisionShape collisionShape;
@@ -22,10 +25,14 @@ public class PlayerController : RigidBody
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Input.SetMouseMode(Input.MouseMode.Captured);
+		Connect("body_entered", this, nameof(_BodyEntered));
 
 		camera = GetNode<Camera>("./CollisionShape/Camera");
 		collisionShape = GetNode<CollisionShape>("./CollisionShape");
+
+		jumpsLeft = maxJumps;
+
+		Input.SetMouseMode(Input.MouseMode.Captured);
 	}
 
 	public override void _Process(float delta)
@@ -74,7 +81,6 @@ public class PlayerController : RigidBody
 			if (Input.IsActionPressed("move_forward"))
 			{
 				moveDirection += -wallrunDirection * 2500f * 2f * (isSprinting ? 2f : 1f);
-				GD.Print("e");
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
@@ -133,6 +139,12 @@ public class PlayerController : RigidBody
 		{
 			StopWallrun(true, normalLeft);
 		}
+
+		if (timeUntilNextWallrun > 0f)
+		{
+			timeUntilNextWallrun -= delta;
+			GD.Print("timeout -= delta");
+		}
 	}
 
 	public override void _Input(InputEvent inputEvent)
@@ -153,29 +165,47 @@ public class PlayerController : RigidBody
 		base._Input(inputEvent);
 	}
 
+	private void _BodyEntered(Node body)
+	{
+		jumpsLeft = maxJumps;
+	}
+
 	private void StartWallrun(bool leftSide, Vector3 normal)
 	{
-		if (isWallrunningRightSide || isWallrunningLeftSide)
+		if (timeUntilNextWallrun > 0f)
 		{
-			// Already wallrunning
+			// Wallrun is still on timeout
 			return;
 		}
-		else
+		else if (timeUntilNextWallrun <= 0f)
 		{
-			// Not wallrunning yet, start wallrun
-			wallrunDirectionChange = Vector3.Zero;
-			GravityScale = 0f;
-			isWallrunningLeftSide = leftSide;
-			isWallrunningRightSide = !leftSide;
-			GD.Print("start wallrun");
+			if (isWallrunningRightSide || isWallrunningLeftSide)
+			{
+				// Already wallrunning
+				return;
+			}
+			else
+			{
+				// Not wallrunning yet, start wallrun
+				wallrunDirectionChange = Vector3.Zero;
+				GravityScale = 0f;
+				isWallrunningLeftSide = leftSide;
+				isWallrunningRightSide = !leftSide;
+				timeUntilNextWallrun = wallrunTimeout;
+				GD.Print("start wallrun");
 
-			// Play effects and animations here
+				// Play effects and animations here
+			}
 		}
-
 	}
 
 	private void Wallrun(bool leftSide, Vector3 normal)
 	{
+		if (!isWallrunningRightSide && !isWallrunningRightSide)
+		{
+			return;
+		}
+
 		float wallrunSideMultiplier = leftSide ? -1f : 1f;
 
 		wallNormal = normal;
@@ -183,7 +213,7 @@ public class PlayerController : RigidBody
 
 		if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
 		{
-			if (linearVelocityLocal.z <= 0)
+			if (linearVelocityLocal.z <= 0f)
 			{
 				// Custom gravity
 				AddCentralForce(-normal * -wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
@@ -214,9 +244,10 @@ public class PlayerController : RigidBody
 			wallrunDirectionChange = Vector3.Zero;
 			GravityScale = 1f;
 			isWallrunningRightSide = false;
-			GD.Print("stop wallrun");
 
 			// Play effects and animations here
+
+			GD.Print("stop wallrun");
 		}
 		else if (isWallrunningLeftSide && leftSide)
 		{
@@ -226,18 +257,26 @@ public class PlayerController : RigidBody
 			isWallrunningLeftSide = false;
 
 			// Play effects and animations here
+
+			GD.Print("stop wallrun");
 		}
 	}
 
 	public void Jump()
 	{
-		if (isWallrunningLeftSide || isWallrunningRightSide)
+		if (jumpsLeft > 0)
 		{
-			AddCentralForce(wallNormal * 25000f);
-		}
-		else
-		{
-			AddCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
+			if (isWallrunningLeftSide || isWallrunningRightSide)
+			{
+				StopWallrun(isWallrunningLeftSide, wallNormal);
+				AddCentralForce(wallNormal * 25000f);
+			}
+			else
+			{
+				AddCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
+			}
+
+			jumpsLeft -= 1;
 		}
 	}
 }
