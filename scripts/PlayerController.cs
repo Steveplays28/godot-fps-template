@@ -201,7 +201,7 @@ public class PlayerController : RigidBody
 
 	private void Wallrun(bool leftSide, Vector3 normal)
 	{
-		if (!isWallrunningRightSide && !isWallrunningRightSide)
+		if (!isWallrunningLeftSide && !isWallrunningRightSide)
 		{
 			return;
 		}
