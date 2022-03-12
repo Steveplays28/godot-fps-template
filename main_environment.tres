@@ -10,5 +10,6 @@ sun_latitude = 45.0
 background_mode = 2
 background_sky = SubResource( 1 )
 ambient_light_color = Color( 1, 1, 1, 1 )
+tonemap_mode = 3
 glow_bloom = 0.25
 glow_bicubic_upscale = true

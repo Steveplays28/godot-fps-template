@@ -10,7 +10,11 @@ public class UIManager : Control
 		if (enableDebug)
 		{
 			RigidBody player = GetNode<RigidBody>("/root/Spatial/Player");
-			SetDebugLabelText($"Global position: {player.GlobalTransform.origin}\nGlobal linear velocity: {player.LinearVelocity}");
+			SetDebugLabelText($"FPS: {1 / delta}\n\nGlobal position: {player.GlobalTransform.origin}\nGlobal linear velocity: {player.LinearVelocity}");
+		}
+		else
+		{
+			SetDebugLabelText("");
 		}
 	}
 

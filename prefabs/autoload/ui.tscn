@@ -17,7 +17,9 @@ anchor_right = 0.3
 anchor_bottom = 0.2
 margin_right = 0.0639801
 margin_bottom = 14.0
-text = "Position: 
+text = "FPS: 
+
+Position: 
 Global linear velocity: "
 __meta__ = {
 "_edit_use_anchors_": false
