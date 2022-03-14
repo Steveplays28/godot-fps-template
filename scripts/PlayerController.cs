@@ -5,6 +5,10 @@ public class PlayerController : RigidBody
 {
 	[Export] public float maxRotationXDegrees = 90f;
 	[Export] public Vector2 sensitivity = new Vector2(0.5f, 0.5f);
+	[Export] public float accelerationMultiplier = 5f;
+	[Export] public float deccelerationMultiplier = 1f;
+	[Export] public float maxVelocity = 10f;
+	[Export] public float stopVelocityTreshold = 1f;
 	[Export] public int maxJumps = 2;
 	[Export] public float wallrunTimeout = 2f;
 
@@ -50,7 +54,7 @@ public class PlayerController : RigidBody
 			Jump();
 		}
 
-		Vector3 moveDirection = new Vector3(-LinearVelocity.x, 0f, -LinearVelocity.z) * 100f;
+		Vector3 moveDirection = Vector3.Zero;
 		isSprinting = false;
 		if (Input.IsActionPressed("sprint"))
 		{
@@ -61,40 +65,50 @@ public class PlayerController : RigidBody
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -collisionShape.GlobalTransform.basis.z * 2500f * (isSprinting ? 2f : 1f);
+				moveDirection += -collisionShape.GlobalTransform.basis.z * 1000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += collisionShape.GlobalTransform.basis.z * 2500f;
+				moveDirection += collisionShape.GlobalTransform.basis.z * 1000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += collisionShape.GlobalTransform.basis.x * 2500f;
+				moveDirection += collisionShape.GlobalTransform.basis.x * 1000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -collisionShape.GlobalTransform.basis.x * 2500f;
+				moveDirection += -collisionShape.GlobalTransform.basis.x * 1000f * accelerationMultiplier;
 			}
 		}
 		else if (isWallrunningRightSide || isWallrunningLeftSide)
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -wallrunDirection * 2500f * 2f * (isSprinting ? 2f : 1f);
+				moveDirection += -wallrunDirection * 1000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += wallrunDirection * 2500f * 2f;
+				moveDirection += wallrunDirection * 1000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += wallrunDirection * 2500f * 2f;
+				moveDirection += wallrunDirection * 1000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -wallrunDirection * 2500f * 2f;
+				moveDirection += -wallrunDirection * 1000f * accelerationMultiplier;
 			}
 		}
+
+		// TODO: Fix broken deceleration
+		// if (!Input.IsActionPressed("move_forward") && !Input.IsActionPressed("move_backwards"))
+		// {
+		// 	moveDirection = new Vector3(moveDirection.x, moveDirection.y, -LinearVelocityLocal().z * 1000f * deccelerationMultiplier);
+		// }
+		// if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
+		// {
+		// 	moveDirection = new Vector3(-LinearVelocityLocal().x * 1000f * deccelerationMultiplier, moveDirection.y, moveDirection.z);
+		// }
 
 		AddCentralForce(moveDirection);
 	}
@@ -147,6 +161,28 @@ public class PlayerController : RigidBody
 		}
 	}
 
+	public override void _IntegrateForces(PhysicsDirectBodyState state)
+	{
+		if (LinearVelocity.Abs().x > maxVelocity)
+		{
+			LinearVelocity = new Vector3(maxVelocity * LinearVelocity.Normalized().x, LinearVelocity.y, LinearVelocity.z);
+		}
+		if (LinearVelocity.Abs().z > maxVelocity)
+		{
+			LinearVelocity = new Vector3(LinearVelocity.x, LinearVelocity.y, maxVelocity * LinearVelocity.Normalized().z);
+		}
+
+		// if (LinearVelocity.Abs().z * 1000f < stopVelocityTreshold)
+		// {
+		// 	LinearVelocity = new Vector3(LinearVelocity.x, LinearVelocity.y, 0f);
+		// }
+		// if (LinearVelocity.Abs().x * 1000f < stopVelocityTreshold)
+		// {
+		// 	LinearVelocity = new Vector3(0f, LinearVelocity.y, LinearVelocity.z);
+		// 	GD.Print("treshold reached");
+		// }
+	}
+
 	public override void _Input(InputEvent inputEvent)
 	{
 		// Mouse input
@@ -168,6 +204,12 @@ public class PlayerController : RigidBody
 	private void _BodyEntered(Node body)
 	{
 		jumpsLeft = maxJumps;
+	}
+
+	public Vector3 LinearVelocityLocal()
+	{
+		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
+		return LinearVelocity.Rotated(Vector3.Up, -globalRotation.y);
 	}
 
 	private void StartWallrun(bool leftSide, Vector3 normal)
