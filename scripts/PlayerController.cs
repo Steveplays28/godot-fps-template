@@ -149,7 +149,7 @@ public class PlayerController : RigidBody
 			StopWallrun(true, normalLeft);
 		}
 
-		if (timeUntilNextWallrun > 0f)
+		if (!isWallrunningLeftSide && !isWallrunningRightSide && timeUntilNextWallrun > 0f)
 		{
 			timeUntilNextWallrun -= delta;
 			GD.Print("timeout -= delta");
