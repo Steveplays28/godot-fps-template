@@ -67,6 +67,7 @@ material/0 = ExtResource( 4 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0 )
 mass = 80.0
 physics_material_override = ExtResource( 2 )
+gravity_scale = 1.5
 continuous_cd = true
 contacts_reported = 1
 contact_monitor = true

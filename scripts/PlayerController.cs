@@ -41,9 +41,6 @@ public class PlayerController : RigidBody
 
 	public override void _Process(float delta)
 	{
-		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
-		linearVelocityLocal = LinearVelocity.Rotated(Vector3.Up, -globalRotation.y);
-
 		if (Input.IsActionJustReleased("restart"))
 		{
 			GetTree().ReloadCurrentScene();
@@ -101,14 +98,14 @@ public class PlayerController : RigidBody
 		}
 
 		// TODO: Fix broken deceleration
-		// if (!Input.IsActionPressed("move_forward") && !Input.IsActionPressed("move_backwards"))
-		// {
-		// 	moveDirection = new Vector3(moveDirection.x, moveDirection.y, -LinearVelocityLocal().z * 1000f * deccelerationMultiplier);
-		// }
-		// if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
-		// {
-		// 	moveDirection = new Vector3(-LinearVelocityLocal().x * 1000f * deccelerationMultiplier, moveDirection.y, moveDirection.z);
-		// }
+		if (!Input.IsActionPressed("move_forward") && !Input.IsActionPressed("move_backwards"))
+		{
+			AddCentralForce(-LinearVelocityLocal().z * collisionShape.GlobalTransform.basis.z * 1000f * deccelerationMultiplier);
+		}
+		if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
+		{
+			AddCentralForce(-LinearVelocityLocal().x * collisionShape.GlobalTransform.basis.x * 1000f * deccelerationMultiplier);
+		}
 
 		AddCentralForce(moveDirection);
 	}
@@ -117,12 +114,10 @@ public class PlayerController : RigidBody
 	{
 		PhysicsDirectSpaceState spaceState = GetWorld().DirectSpaceState;
 
-		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
-
 		// Use global coordinates instead of local coordinates for raycasts
 		// Right side raycast
 		Godot.Collections.Dictionary raycastResultRight = spaceState.IntersectRay(GlobalTransform.origin,
-			GlobalTransform.origin + new Vector3(5f, 0f, 0f).Rotated(Vector3.Up, globalRotation.y),
+			GlobalTransform.origin + new Vector3(5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
 			new Godot.Collections.Array { this });
 
 		Vector3 normalRight = Vector3.Zero;
@@ -139,7 +134,7 @@ public class PlayerController : RigidBody
 
 		// Left side raycast
 		Godot.Collections.Dictionary raycastResultLeft = spaceState.IntersectRay(GlobalTransform.origin,
-			GlobalTransform.origin + new Vector3(-5f, 0f, 0f).Rotated(Vector3.Up, globalRotation.y),
+			GlobalTransform.origin + new Vector3(-5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
 			new Godot.Collections.Array { this });
 
 		Vector3 normalLeft = Vector3.Zero;
@@ -206,10 +201,14 @@ public class PlayerController : RigidBody
 		jumpsLeft = maxJumps;
 	}
 
+	public Vector3 GlobalRotation()
+	{
+		return collisionShape.GlobalTransform.basis.GetEuler();
+	}
+
 	public Vector3 LinearVelocityLocal()
 	{
-		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
-		return LinearVelocity.Rotated(Vector3.Up, -globalRotation.y);
+		return LinearVelocity.Rotated(Vector3.Up, -GlobalRotation().y);
 	}
 
 	private void StartWallrun(bool leftSide, Vector3 normal)
