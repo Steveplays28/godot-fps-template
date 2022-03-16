@@ -229,7 +229,8 @@ public class PlayerController : RigidBody
 			else
 			{
 				// Not wallrunning yet, start wallrun
-				wallrunDirectionChange = Vector3.Zero;
+				float wallrunSideMultiplier = leftSide ? -1f : 1f;
+				wallrunDirectionLastFrame = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 				GravityScale = 0f;
 				isWallrunningLeftSide = leftSide;
 				isWallrunningRightSide = !leftSide;
@@ -261,6 +262,7 @@ public class PlayerController : RigidBody
 			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
 			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
 			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 5f));
+			GD.Print(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
