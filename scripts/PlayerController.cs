@@ -253,29 +253,26 @@ public class PlayerController : RigidBody
 		wallNormal = normal;
 		wallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 
-		if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
+		if (linearVelocityLocal.z <= 0f)
 		{
-			if (linearVelocityLocal.z <= 0f)
-			{
-				// Custom gravity
-				AddCentralForce(-normal * -wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
+			// Custom gravity
+			AddCentralForce(normal * linearVelocityLocal.z * 5000f);
 
-				wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-				collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 0.04f));
-			}
-			else
-			{
-				// Custom gravity
-				AddCentralForce(-normal * wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
-
-				wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-				collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 0.04f));
-			}
+			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
+			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
+			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
-			wallrunDirectionLastFrame = wallrunDirection;
+			// Custom gravity
+			AddCentralForce(normal * wallrunDirectionChange.Length() * linearVelocityLocal.z * 5000f);
+
+			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
+			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
+			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 5f));
 		}
+
+		wallrunDirectionLastFrame = wallrunDirection;
 	}
 
 	private void StopWallrun(bool leftSide, Vector3 normal)
