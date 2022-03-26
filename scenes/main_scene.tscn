@@ -77,8 +77,10 @@ axis_lock_angular_y = true
 axis_lock_angular_z = true
 linear_damp = 0.0
 script = ExtResource( 1 )
+sensitivity = Vector2( 0.25, 0.25 )
 accelerationMultiplier = 10.0
 deccelerationMultiplier = 0.5
+wallrunTimeout = 0.0
 
 [node name="CollisionShape" type="CollisionShape" parent="Player"]
 shape = SubResource( 2 )
