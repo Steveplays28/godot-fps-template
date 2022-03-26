@@ -84,19 +84,19 @@ public class PlayerController : RigidBody
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -wallrunDirection * 2000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
+				moveDirection += -wallrunDirection * 4000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += wallrunDirection * 2000f * accelerationMultiplier;
+				moveDirection += wallrunDirection * 4000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += wallrunDirection * 2000f * accelerationMultiplier;
+				moveDirection += wallrunDirection * 4000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -wallrunDirection * 2000f * accelerationMultiplier;
+				moveDirection += -wallrunDirection * 4000f * accelerationMultiplier;
 			}
 		}
 
@@ -253,24 +253,18 @@ public class PlayerController : RigidBody
 
 		wallNormal = normal;
 		wallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
+		wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
 
 		if (LinearVelocityLocal().z <= 0f)
 		{
 			// Custom gravity
-			AddCentralForce(normal * -LinearVelocityLocal().Normalized().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
-
-			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
+			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
 			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
-			GD.Print(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
 			// Custom gravity
-			AddCentralForce(normal * -LinearVelocityLocal().Normalized().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
-
-			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
+			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
 			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 
