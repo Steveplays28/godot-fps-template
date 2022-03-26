@@ -254,24 +254,24 @@ public class PlayerController : RigidBody
 		wallNormal = normal;
 		wallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 
-		if (linearVelocityLocal.z <= 0f)
+		if (LinearVelocityLocal().z <= 0f)
 		{
 			// Custom gravity
-			AddCentralForce(normal * linearVelocityLocal.z * 5000f);
+			AddCentralForce(normal * -LinearVelocityLocal().Normalized().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
 
 			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
 			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
-			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 5f));
-			GD.Print(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 5f));
+			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
+			GD.Print(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
 			// Custom gravity
-			AddCentralForce(normal * -linearVelocityLocal.z * 5000f);
+			AddCentralForce(normal * -LinearVelocityLocal().Normalized().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
 
 			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
 			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
-			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 5f));
+			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 
 		wallrunDirectionLastFrame = wallrunDirection;
