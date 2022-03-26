@@ -235,7 +235,6 @@ public class PlayerController : RigidBody
 				LinearVelocity = new Vector3(LinearVelocity.x, 0f, LinearVelocity.z);
 				isWallrunningLeftSide = leftSide;
 				isWallrunningRightSide = !leftSide;
-				timeUntilNextWallrun = wallrunTimeout;
 				GD.Print("start wallrun");
 
 				// Play effects and animations here
@@ -283,6 +282,7 @@ public class PlayerController : RigidBody
 		if (isWallrunningRightSide && !leftSide)
 		{
 			// Stop wallrunning on the right side
+			timeUntilNextWallrun = wallrunTimeout;
 			wallrunDirectionChange = Vector3.Zero;
 			GravityScale = 1f;
 			isWallrunningRightSide = false;
@@ -294,6 +294,7 @@ public class PlayerController : RigidBody
 		else if (isWallrunningLeftSide && leftSide)
 		{
 			// Stop wallrunning on the left side
+			timeUntilNextWallrun = wallrunTimeout;
 			wallrunDirectionChange = Vector3.Zero;
 			GravityScale = 1f;
 			isWallrunningLeftSide = false;
@@ -311,7 +312,8 @@ public class PlayerController : RigidBody
 			if (isWallrunningLeftSide || isWallrunningRightSide)
 			{
 				StopWallrun(isWallrunningLeftSide, wallNormal);
-				AddCentralForce(wallNormal * 25000f);
+				AddCentralForce(wallNormal * 100000f);
+				AddCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
 			}
 			else
 			{
