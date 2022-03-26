@@ -84,19 +84,19 @@ public class PlayerController : RigidBody
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -wallrunDirection * 1000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
+				moveDirection += -wallrunDirection * 2000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += wallrunDirection * 1000f * accelerationMultiplier;
+				moveDirection += wallrunDirection * 2000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += wallrunDirection * 1000f * accelerationMultiplier;
+				moveDirection += wallrunDirection * 2000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -wallrunDirection * 1000f * accelerationMultiplier;
+				moveDirection += -wallrunDirection * 2000f * accelerationMultiplier;
 			}
 		}
 
@@ -267,7 +267,7 @@ public class PlayerController : RigidBody
 		else
 		{
 			// Custom gravity
-			AddCentralForce(normal * wallrunDirectionChange.Length() * linearVelocityLocal.z * 5000f);
+			AddCentralForce(normal * -linearVelocityLocal.z * 5000f);
 
 			wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
 			GD.Print($"last frame: {wallrunDirectionLastFrame}, current frame: {wallrunDirection}, change: {wallrunDirectionChange}");
