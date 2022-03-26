@@ -232,6 +232,7 @@ public class PlayerController : RigidBody
 				float wallrunSideMultiplier = leftSide ? -1f : 1f;
 				wallrunDirectionLastFrame = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 				GravityScale = 0f;
+				LinearVelocity = new Vector3(LinearVelocity.x, 0f, LinearVelocity.z);
 				isWallrunningLeftSide = leftSide;
 				isWallrunningRightSide = !leftSide;
 				timeUntilNextWallrun = wallrunTimeout;
