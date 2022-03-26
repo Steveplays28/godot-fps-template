@@ -170,7 +170,7 @@ public class PlayerController : RigidBody
 	{
 		if (LinearVelocity.Abs().x > maxVelocity || LinearVelocity.Abs().z > maxVelocity)
 		{
-			LinearVelocity = LinearVelocity.Normalized() * maxVelocity;
+			LinearVelocity = new Vector3(LinearVelocity.Normalized().x * maxVelocity, LinearVelocity.y, LinearVelocity.Normalized().z * maxVelocity);
 		}
 
 		// if (LinearVelocity.Abs().z * 1000f < stopVelocityTreshold)
