@@ -1,4 +1,3 @@
-using System;
 using Godot;
 
 public class PlayerController : RigidBody
@@ -29,7 +28,7 @@ public class PlayerController : RigidBody
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Connect("body_entered", this, nameof(_BodyEntered));
+		_ = Connect("body_entered", this, nameof(_BodyEntered));
 
 		camera = GetNode<Camera>("./CollisionShape/Camera");
 		collisionShape = GetNode<CollisionShape>("./CollisionShape");
@@ -41,12 +40,21 @@ public class PlayerController : RigidBody
 
 	public override void _Process(float delta)
 	{
-		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
-		linearVelocityLocal = LinearVelocity.Rotated(Vector3.Up, -globalRotation.y);
-
 		if (Input.IsActionJustReleased("restart"))
 		{
-			GetTree().ReloadCurrentScene();
+			_ = GetTree().ReloadCurrentScene();
+		}
+
+		if (Input.IsActionJustPressed("escape"))
+		{
+			if (Input.GetMouseMode() == Input.MouseMode.Visible)
+			{
+				Input.SetMouseMode(Input.MouseMode.Captured);
+			}
+			else
+			{
+				Input.SetMouseMode(Input.MouseMode.Visible);
+			}
 		}
 
 		if (Input.IsActionJustPressed("jump"))
@@ -65,19 +73,19 @@ public class PlayerController : RigidBody
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -collisionShape.GlobalTransform.basis.z * 1000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
+				moveDirection += -collisionShape.GlobalTransform.basis.z.Normalized() * 1000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += collisionShape.GlobalTransform.basis.z * 1000f * accelerationMultiplier;
+				moveDirection += collisionShape.GlobalTransform.basis.z.Normalized() * 1000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += collisionShape.GlobalTransform.basis.x * 1000f * accelerationMultiplier;
+				moveDirection += collisionShape.GlobalTransform.basis.x.Normalized() * 1000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -collisionShape.GlobalTransform.basis.x * 1000f * accelerationMultiplier;
+				moveDirection += -collisionShape.GlobalTransform.basis.x.Normalized() * 1000f * accelerationMultiplier;
 			}
 		}
 		else if (isWallrunningRightSide || isWallrunningLeftSide)
@@ -100,15 +108,14 @@ public class PlayerController : RigidBody
 			}
 		}
 
-		// TODO: Fix broken deceleration
-		// if (!Input.IsActionPressed("move_forward") && !Input.IsActionPressed("move_backwards"))
-		// {
-		// 	moveDirection = new Vector3(moveDirection.x, moveDirection.y, -LinearVelocityLocal().z * 1000f * deccelerationMultiplier);
-		// }
-		// if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
-		// {
-		// 	moveDirection = new Vector3(-LinearVelocityLocal().x * 1000f * deccelerationMultiplier, moveDirection.y, moveDirection.z);
-		// }
+		if (!Input.IsActionPressed("move_forward") && !Input.IsActionPressed("move_backwards"))
+		{
+			AddCentralForce(-LinearVelocityLocal().z * collisionShape.GlobalTransform.basis.z * 1000f * deccelerationMultiplier);
+		}
+		if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
+		{
+			AddCentralForce(-LinearVelocityLocal().x * collisionShape.GlobalTransform.basis.x * 1000f * deccelerationMultiplier);
+		}
 
 		AddCentralForce(moveDirection);
 	}
@@ -117,12 +124,10 @@ public class PlayerController : RigidBody
 	{
 		PhysicsDirectSpaceState spaceState = GetWorld().DirectSpaceState;
 
-		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
-
 		// Use global coordinates instead of local coordinates for raycasts
 		// Right side raycast
 		Godot.Collections.Dictionary raycastResultRight = spaceState.IntersectRay(GlobalTransform.origin,
-			GlobalTransform.origin + new Vector3(5f, 0f, 0f).Rotated(Vector3.Up, globalRotation.y),
+			GlobalTransform.origin + new Vector3(5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
 			new Godot.Collections.Array { this });
 
 		Vector3 normalRight = Vector3.Zero;
@@ -139,7 +144,7 @@ public class PlayerController : RigidBody
 
 		// Left side raycast
 		Godot.Collections.Dictionary raycastResultLeft = spaceState.IntersectRay(GlobalTransform.origin,
-			GlobalTransform.origin + new Vector3(-5f, 0f, 0f).Rotated(Vector3.Up, globalRotation.y),
+			GlobalTransform.origin + new Vector3(-5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
 			new Godot.Collections.Array { this });
 
 		Vector3 normalLeft = Vector3.Zero;
@@ -154,7 +159,7 @@ public class PlayerController : RigidBody
 			StopWallrun(true, normalLeft);
 		}
 
-		if (timeUntilNextWallrun > 0f)
+		if (!isWallrunningLeftSide && !isWallrunningRightSide && timeUntilNextWallrun > 0f)
 		{
 			timeUntilNextWallrun -= delta;
 			GD.Print("timeout -= delta");
@@ -163,13 +168,9 @@ public class PlayerController : RigidBody
 
 	public override void _IntegrateForces(PhysicsDirectBodyState state)
 	{
-		if (LinearVelocity.Abs().x > maxVelocity)
+		if (LinearVelocity.Abs().x > maxVelocity || LinearVelocity.Abs().z > maxVelocity)
 		{
-			LinearVelocity = new Vector3(maxVelocity * LinearVelocity.Normalized().x, LinearVelocity.y, LinearVelocity.z);
-		}
-		if (LinearVelocity.Abs().z > maxVelocity)
-		{
-			LinearVelocity = new Vector3(LinearVelocity.x, LinearVelocity.y, maxVelocity * LinearVelocity.Normalized().z);
+			LinearVelocity = new Vector3(LinearVelocity.Normalized().x * maxVelocity, LinearVelocity.y, LinearVelocity.Normalized().z * maxVelocity);
 		}
 
 		// if (LinearVelocity.Abs().z * 1000f < stopVelocityTreshold)
@@ -188,7 +189,7 @@ public class PlayerController : RigidBody
 		// Mouse input
 		if (inputEvent is InputEventMouseMotion)
 		{
-			var inputEventMouseMotion = inputEvent as InputEventMouseMotion;
+			InputEventMouseMotion inputEventMouseMotion = inputEvent as InputEventMouseMotion;
 
 			camera.RotateX(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.y * sensitivity.x));
 			collisionShape.RotateY(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.x * sensitivity.y));
@@ -206,10 +207,14 @@ public class PlayerController : RigidBody
 		jumpsLeft = maxJumps;
 	}
 
+	public Vector3 GlobalRotation()
+	{
+		return collisionShape.Rotation;
+	}
+
 	public Vector3 LinearVelocityLocal()
 	{
-		Vector3 globalRotation = collisionShape.GlobalTransform.basis.GetEuler();
-		return LinearVelocity.Rotated(Vector3.Up, -globalRotation.y);
+		return LinearVelocity.Rotated(Vector3.Up, -GlobalRotation().y);
 	}
 
 	private void StartWallrun(bool leftSide, Vector3 normal)
@@ -229,7 +234,8 @@ public class PlayerController : RigidBody
 			else
 			{
 				// Not wallrunning yet, start wallrun
-				wallrunDirectionChange = Vector3.Zero;
+				float wallrunSideMultiplier = leftSide ? -1f : 1f;
+				wallrunDirectionLastFrame = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 				GravityScale = 0f;
 				isWallrunningLeftSide = leftSide;
 				isWallrunningRightSide = !leftSide;

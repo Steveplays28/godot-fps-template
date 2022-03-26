@@ -20,7 +20,9 @@ margin_bottom = 14.0
 text = "FPS: 
 
 Position: 
-Global linear velocity: "
+Global linear velocity: 
+
+Local linear velocity: "
 __meta__ = {
 "_edit_use_anchors_": false
 }

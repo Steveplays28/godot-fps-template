@@ -67,6 +67,7 @@ material/0 = ExtResource( 4 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0 )
 mass = 80.0
 physics_material_override = ExtResource( 2 )
+gravity_scale = 1.5
 continuous_cd = true
 contacts_reported = 1
 contact_monitor = true
@@ -76,8 +77,10 @@ axis_lock_angular_y = true
 axis_lock_angular_z = true
 linear_damp = 0.0
 script = ExtResource( 1 )
+sensitivity = Vector2( 0.1, 0.1 )
 accelerationMultiplier = 10.0
 deccelerationMultiplier = 0.5
+wallrunTimeout = 0.0
 
 [node name="CollisionShape" type="CollisionShape" parent="Player"]
 shape = SubResource( 2 )
