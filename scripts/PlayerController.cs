@@ -255,16 +255,17 @@ public class PlayerController : RigidBody
 		wallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 		wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
 
+		// TODO: Always add custom gravity for a small period of time after starting a wallrun 
 		if (LinearVelocityLocal().z <= 0f)
 		{
 			// Custom gravity
-			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
+			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Length() * 100000f);
 			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
 			// Custom gravity
-			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Normalized().Length() * 10000f);
+			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Length() * 100000f);
 			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 
