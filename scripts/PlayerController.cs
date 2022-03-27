@@ -92,19 +92,19 @@ public class PlayerController : RigidBody
 		{
 			if (Input.IsActionPressed("move_forward"))
 			{
-				moveDirection += -wallrunDirection * 1000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
+				moveDirection += -wallrunDirection * 4000f * accelerationMultiplier * (isSprinting ? 2f : 1f);
 			}
 			if (Input.IsActionPressed("move_backwards"))
 			{
-				moveDirection += wallrunDirection * 1000f * accelerationMultiplier;
+				moveDirection += wallrunDirection * 4000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_right"))
 			{
-				moveDirection += wallrunDirection * 1000f * accelerationMultiplier;
+				moveDirection += wallrunDirection * 4000f * accelerationMultiplier;
 			}
 			if (Input.IsActionPressed("move_left"))
 			{
-				moveDirection += -wallrunDirection * 1000f * accelerationMultiplier;
+				moveDirection += -wallrunDirection * 4000f * accelerationMultiplier;
 			}
 		}
 
@@ -237,9 +237,9 @@ public class PlayerController : RigidBody
 				float wallrunSideMultiplier = leftSide ? -1f : 1f;
 				wallrunDirectionLastFrame = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 				GravityScale = 0f;
+				LinearVelocity = new Vector3(LinearVelocity.x, 0f, LinearVelocity.z);
 				isWallrunningLeftSide = leftSide;
 				isWallrunningRightSide = !leftSide;
-				timeUntilNextWallrun = wallrunTimeout;
 				GD.Print("start wallrun");
 
 				// Play effects and animations here
@@ -258,30 +258,23 @@ public class PlayerController : RigidBody
 
 		wallNormal = normal;
 		wallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
+		wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
 
-		if (!wallrunDirection.IsEqualApprox(wallrunDirectionLastFrame))
+		// TODO: Always add custom gravity for a small period of time after starting a wallrun
+		if (LinearVelocityLocal().z <= 0f)
 		{
-			if (linearVelocityLocal.z <= 0f)
-			{
-				// Custom gravity
-				AddCentralForce(-normal * -wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
-
-				wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-				collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 0.04f));
-			}
-			else
-			{
-				// Custom gravity
-				AddCentralForce(-normal * wallrunDirectionChange.Length() * linearVelocityLocal.z * 1000f);
-
-				wallrunDirectionChange = wallrunDirectionLastFrame - wallrunDirection;
-				collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * linearVelocityLocal.z * wallrunSideMultiplier * 0.04f));
-			}
+			// Custom gravity
+			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Length() * 100000f);
+			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
-			wallrunDirectionLastFrame = wallrunDirection;
+			// Custom gravity
+			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Length() * 100000f);
+			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
+
+		wallrunDirectionLastFrame = wallrunDirection;
 	}
 
 	private void StopWallrun(bool leftSide, Vector3 normal)
@@ -289,6 +282,7 @@ public class PlayerController : RigidBody
 		if (isWallrunningRightSide && !leftSide)
 		{
 			// Stop wallrunning on the right side
+			timeUntilNextWallrun = wallrunTimeout;
 			wallrunDirectionChange = Vector3.Zero;
 			GravityScale = 1f;
 			isWallrunningRightSide = false;
@@ -300,6 +294,7 @@ public class PlayerController : RigidBody
 		else if (isWallrunningLeftSide && leftSide)
 		{
 			// Stop wallrunning on the left side
+			timeUntilNextWallrun = wallrunTimeout;
 			wallrunDirectionChange = Vector3.Zero;
 			GravityScale = 1f;
 			isWallrunningLeftSide = false;
@@ -317,7 +312,8 @@ public class PlayerController : RigidBody
 			if (isWallrunningLeftSide || isWallrunningRightSide)
 			{
 				StopWallrun(isWallrunningLeftSide, wallNormal);
-				AddCentralForce(wallNormal * 25000f);
+				AddCentralForce(wallNormal * 100000f);
+				AddCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
 			}
 			else
 			{
