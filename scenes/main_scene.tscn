@@ -80,7 +80,6 @@ script = ExtResource( 1 )
 sensitivity = Vector2( 0.1, 0.1 )
 accelerationMultiplier = 10.0
 deccelerationMultiplier = 0.5
-wallrunTimeout = 0.0
 
 [node name="CollisionShape" type="CollisionShape" parent="Player"]
 shape = SubResource( 2 )

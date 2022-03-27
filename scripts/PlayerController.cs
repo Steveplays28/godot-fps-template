@@ -25,6 +25,8 @@ public class PlayerController : RigidBody
 	public Camera camera;
 	public CollisionShape collisionShape;
 
+	private float defaultGravityScale;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -33,9 +35,8 @@ public class PlayerController : RigidBody
 		camera = GetNode<Camera>("./CollisionShape/Camera");
 		collisionShape = GetNode<CollisionShape>("./CollisionShape");
 
+		defaultGravityScale = GravityScale;
 		jumpsLeft = maxJumps;
-
-		Input.SetMouseMode(Input.MouseMode.Captured);
 	}
 
 	public override void _Process(float delta)
@@ -265,12 +266,16 @@ public class PlayerController : RigidBody
 		{
 			// Custom gravity
 			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Length() * 100000f);
+
+			// Rotate camera along wall
 			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
 			// Custom gravity
 			AddCentralForce(normal * -LinearVelocityLocal().Abs().Length() * wallrunDirectionChange.Length() * 100000f);
+
+			// Rotate camera along wall
 			collisionShape.RotateY(Mathf.Deg2Rad(wallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 
@@ -284,7 +289,7 @@ public class PlayerController : RigidBody
 			// Stop wallrunning on the right side
 			timeUntilNextWallrun = wallrunTimeout;
 			wallrunDirectionChange = Vector3.Zero;
-			GravityScale = 1f;
+			GravityScale = defaultGravityScale;
 			isWallrunningRightSide = false;
 
 			// Play effects and animations here
@@ -296,7 +301,7 @@ public class PlayerController : RigidBody
 			// Stop wallrunning on the left side
 			timeUntilNextWallrun = wallrunTimeout;
 			wallrunDirectionChange = Vector3.Zero;
-			GravityScale = 1f;
+			GravityScale = defaultGravityScale;
 			isWallrunningLeftSide = false;
 
 			// Play effects and animations here
