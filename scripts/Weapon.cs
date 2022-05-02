@@ -103,7 +103,7 @@ public class Weapon : Spatial
 		{
 			GD.Print("hit something");
 
-			// TODO: Muzzle flash, bullet impact hole, and bullet tracers
+			// TODO: Bullet impact hole, and bullet tracers
 		}
 	}
 
@@ -114,7 +114,7 @@ public class Weapon : Spatial
 			currentMagazineAmmoCount = MagazineAmmoCount - BarrelAmmoCount;
 			currentBarrelAmmoCount = BarrelAmmoCount;
 		}
-		else if (currentMagazineAmmoCount <= 0)
+		else if (currentMagazineAmmoCount != MagazineAmmoCount)
 		{
 			currentMagazineAmmoCount = MagazineAmmoCount;
 		}
