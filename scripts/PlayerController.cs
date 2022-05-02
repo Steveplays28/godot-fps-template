@@ -2,7 +2,7 @@ using Godot;
 
 public class PlayerController : RigidBody
 {
-	[Export] public float maxRotationXDegrees = 90f;
+	[Export] public float MaxRotationXDegrees = 90f;
 	[Export] public Vector2 sensitivity = new Vector2(0.5f, 0.5f);
 	[Export] public float accelerationMultiplier = 5f;
 	[Export] public float deccelerationMultiplier = 1f;
@@ -196,7 +196,7 @@ public class PlayerController : RigidBody
 			collisionShape.RotateY(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.x * sensitivity.y));
 
 			Vector3 cameraRotationClamped = camera.RotationDegrees;
-			cameraRotationClamped.x = Mathf.Clamp(cameraRotationClamped.x, -maxRotationXDegrees, maxRotationXDegrees);
+			cameraRotationClamped.x = Mathf.Clamp(cameraRotationClamped.x, -MaxRotationXDegrees, MaxRotationXDegrees);
 			camera.RotationDegrees = cameraRotationClamped;
 		}
 
