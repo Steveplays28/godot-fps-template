@@ -151,11 +151,11 @@ public class Weapon : Spatial
 		{
 			if (rayCast.IsColliding())
 			{
-				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, rayCast.GetCollisionPoint() });
+				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, rayCast.GetCollisionPoint() }, new Color(255, 0, 0));
 			}
 			else
 			{
-				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.CastTo) });
+				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.CastTo) }, new Color(255, 0, 0));
 			}
 		}
 	}

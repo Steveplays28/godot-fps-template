@@ -13,6 +13,23 @@ namespace SteveUtility
 			}
 			End();
 		}
+		public void DrawLine(Vector3[] points, Color color)
+		{
+			Begin(Mesh.PrimitiveType.Lines);
+			var spatialMaterial = new SpatialMaterial
+			{
+				FlagsUsePointSize = true,
+				ParamsPointSize = 5f,
+				VertexColorUseAsAlbedo = true
+			};
+			MaterialOverride = spatialMaterial;
+			SetColor(color);
+			for (int i = 0; i < points.Length; ++i)
+			{
+				AddVertex(points[i]);
+			}
+			End();
+		}
 
 		public void ClearLines()
 		{
