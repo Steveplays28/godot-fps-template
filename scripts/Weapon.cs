@@ -6,6 +6,7 @@ public class Weapon : Spatial
 {
 	[Export] public string PlayerNodePath = "/root/Spatial/Player";
 	[Export] public string CameraNodePath = "/root/Spatial/Player/CollisionShape/Camera";
+	[Export] public string UIManagerNodePath = "/root/UI";
 	[Export] public string HorizontalRotationNodePath = "/root/Spatial/Player/CollisionShape";
 	[Export] public string RayCastNodePath = "Muzzle";
 	[Export] public string ParticleSystemNodePath = "Muzzle/ParticleSystem";
@@ -20,9 +21,11 @@ public class Weapon : Spatial
 	[Export] public int MagazineAmmoCount = 30;
 	[Export] public int BarrelAmmoCount = 1;
 	[Export] public float ReloadTime = 2f;
+	[Export] public float CrosshairFadeTime = 0.1f;
 
 	private Spatial player;
 	private Camera camera;
+	private Control uiManager;
 	private Spatial horizontalRotationNode;
 	private RayCast rayCast;
 	private Particles particleSystem;
@@ -33,12 +36,17 @@ public class Weapon : Spatial
 	private int currentMagazineAmmoCount;
 	private int currentBarrelAmmoCount;
 	private RandomNumberGenerator rng;
+	private bool isAimingDownSight;
 	private bool isReloading;
+	private float originalCrosshairSelfModulateAlpha;
 
 	public override void _Ready()
 	{
+		base._Ready();
+
 		player = GetNode<Spatial>(PlayerNodePath);
 		camera = GetNode<Camera>(CameraNodePath);
+		uiManager = GetNode<Control>(UIManagerNodePath);
 		horizontalRotationNode = GetNode<Spatial>(HorizontalRotationNodePath);
 		rayCast = GetNode<RayCast>(RayCastNodePath);
 		particleSystem = GetNode<Particles>(ParticleSystemNodePath);
@@ -48,21 +56,17 @@ public class Weapon : Spatial
 		currentMagazineAmmoCount = MagazineAmmoCount;
 		currentBarrelAmmoCount = BarrelAmmoCount;
 		rng = new RandomNumberGenerator();
+		TextureRect crosshair = (TextureRect)uiManager.Get(nameof(UIManager.Crosshair));
+		originalCrosshairSelfModulateAlpha = crosshair.SelfModulate.a;
 	}
 
 	public override void _Process(float delta)
 	{
-		if (Input.IsActionJustPressed("aim_down_sight"))
-		{
-			Tween tween = new Tween();
-			AddChild(tween);
-			tween.InterpolateProperty(this, "translation", null, AimDownSightPosition, AimDownSightSpeed);
-			tween.Start();
-		}
+		base._Process(delta);
 
-		if (Input.IsActionJustReleased("aim_down_sight"))
+		if (Input.IsActionJustPressed("aim_down_sight") || Input.IsActionJustReleased("aim_down_sight"))
 		{
-			AimDownSight();
+			ToggleAimDownSight();
 		}
 
 		if (Input.IsActionPressed("shoot") || Input.IsActionJustPressed("shoot"))
@@ -78,15 +82,30 @@ public class Weapon : Spatial
 		timeUntilNextShot -= delta;
 	}
 
-	private async void AimDownSight()
+	public override void _PhysicsProcess(float delta)
 	{
-		Tween tween = new Tween();
-		AddChild(tween);
-		tween.InterpolateProperty(this, "translation", null, initialPosition, AimDownSightSpeed);
-		tween.Start();
+		base._PhysicsProcess(delta);
 
-		await ToSignal(tween, "tween_all_completed");
-		tween.QueueFree();
+		SetCrosshairPosition();
+	}
+
+	private void ToggleAimDownSight()
+	{
+		Tween tween = this.CreateTween();
+
+		if (isAimingDownSight)
+		{
+			tween.InterpolateProperty(this, "translation", null, initialPosition, AimDownSightSpeed);
+			isAimingDownSight = false;
+		}
+		else
+		{
+			tween.InterpolateProperty(this, "translation", null, AimDownSightPosition, AimDownSightSpeed);
+			isAimingDownSight = true;
+		}
+
+		tween.Start();
+		tween.DeleteOnAllCompleted();
 	}
 
 	private void Shoot()
@@ -149,13 +168,15 @@ public class Weapon : Spatial
 		// Debug
 		if (rayCast.Enabled)
 		{
+			Node lineDrawer = GetNode("/root/Debug/LineDrawer");
+
 			if (rayCast.IsColliding())
 			{
-				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, rayCast.GetCollisionPoint() }, new Color(255, 0, 0));
+				lineDrawer.Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, rayCast.GetCollisionPoint() }, new Color(255, 0, 0));
 			}
 			else
 			{
-				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.CastTo) }, new Color(255, 0, 0));
+				lineDrawer.Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.CastTo) }, new Color(255, 0, 0));
 			}
 		}
 	}
@@ -165,6 +186,7 @@ public class Weapon : Spatial
 		if (currentMagazineAmmoCount != MagazineAmmoCount)
 		{
 			animationTree.Set("parameters/reload_one_shot/active", true);
+			ToggleCrosshairVisibility();
 			isReloading = true;
 			await ToSignal(GetTree().CreateTimer(ReloadTime), "timeout");
 
@@ -178,7 +200,43 @@ public class Weapon : Spatial
 				currentMagazineAmmoCount = MagazineAmmoCount;
 			}
 
+			ToggleCrosshairVisibility();
 			isReloading = false;
 		}
+	}
+
+	private void SetCrosshairPosition()
+	{
+		if (rayCast.Enabled)
+		{
+			TextureRect crosshair = (TextureRect)uiManager.Get(nameof(UIManager.Crosshair));
+
+			if (rayCast.IsColliding())
+			{
+				crosshair.RectPosition = camera.UnprojectPosition(rayCast.GetCollisionPoint());
+			}
+			else
+			{
+				crosshair.RectPosition = camera.UnprojectPosition(ToGlobal(rayCast.CastTo));
+			}
+		}
+	}
+
+	private void ToggleCrosshairVisibility()
+	{
+		TextureRect crosshair = (TextureRect)uiManager.Get(nameof(UIManager.Crosshair));
+		Tween tween = this.CreateTween();
+
+		if (crosshair.SelfModulate.a == 0f)
+		{
+			tween.InterpolateProperty(crosshair, "self_modulate", crosshair.SelfModulate, new Color(crosshair.SelfModulate.r, crosshair.SelfModulate.g, crosshair.SelfModulate.b, originalCrosshairSelfModulateAlpha), CrosshairFadeTime);
+		}
+		else
+		{
+			tween.InterpolateProperty(crosshair, "self_modulate", crosshair.SelfModulate, new Color(crosshair.SelfModulate.r, crosshair.SelfModulate.g, crosshair.SelfModulate.b, 0f), CrosshairFadeTime);
+		}
+
+		tween.Start();
+		tween.DeleteOnAllCompleted();
 	}
 }

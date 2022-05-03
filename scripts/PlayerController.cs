@@ -31,17 +31,20 @@ public class PlayerController : RigidBody
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		_ = Connect("body_entered", this, nameof(_BodyEntered));
+		base._Ready();
+
+		Connect("body_entered", this, nameof(BodyEntered));
 
 		camera = GetNode<Camera>("./CollisionShape/Camera");
 		collisionShape = GetNode<CollisionShape>("./CollisionShape");
-
 		defaultGravityScale = GravityScale;
 		jumpsLeft = maxJumps;
 	}
 
 	public override void _Process(float delta)
 	{
+		base._Process(delta);
+
 		if (Input.IsActionJustReleased("restart"))
 		{
 			_ = GetTree().ReloadCurrentScene();
@@ -125,6 +128,8 @@ public class PlayerController : RigidBody
 
 	public override void _PhysicsProcess(float delta)
 	{
+		base._PhysicsProcess(delta);
+
 		PhysicsDirectSpaceState spaceState = GetWorld().DirectSpaceState;
 
 		// Use global coordinates instead of local coordinates for raycasts
@@ -165,12 +170,13 @@ public class PlayerController : RigidBody
 		if (!isWallrunningLeftSide && !isWallrunningRightSide && timeUntilNextWallrun > 0f)
 		{
 			timeUntilNextWallrun -= delta;
-			GD.Print("timeout -= delta");
 		}
 	}
 
 	public override void _IntegrateForces(PhysicsDirectBodyState state)
 	{
+		base._IntegrateForces(state);
+
 		if (LinearVelocity.Abs().x > maxVelocity || LinearVelocity.Abs().z > maxVelocity)
 		{
 			LinearVelocity = new Vector3(LinearVelocity.Normalized().x * maxVelocity, LinearVelocity.y, LinearVelocity.Normalized().z * maxVelocity);
@@ -189,6 +195,8 @@ public class PlayerController : RigidBody
 
 	public override void _Input(InputEvent inputEvent)
 	{
+		base._Input(inputEvent);
+
 		// Mouse input
 		if (inputEvent is InputEventMouseMotion)
 		{
@@ -205,7 +213,9 @@ public class PlayerController : RigidBody
 		base._Input(inputEvent);
 	}
 
-	private void _BodyEntered(Node body)
+#pragma warning disable
+	private void BodyEntered(Node body)
+#pragma warning restore
 	{
 		jumpsLeft = maxJumps;
 	}
