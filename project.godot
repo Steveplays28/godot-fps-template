@@ -18,6 +18,7 @@ config/icon="res://icon.png"
 [autoload]
 
 UI="*res://prefabs/autoload/ui.tscn"
+Debug="*res://prefabs/autoload/debug.tscn"
 
 [debug]
 

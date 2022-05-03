@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using SteveUtility;
 
 public class Weapon : Spatial
 {
@@ -143,6 +144,19 @@ public class Weapon : Spatial
 			GD.Print("hit something");
 
 			// TODO: Bullet impact hole, and bullet tracers
+		}
+
+		// Debug
+		if (rayCast.Enabled)
+		{
+			if (rayCast.IsColliding())
+			{
+				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, rayCast.GetCollisionPoint() });
+			}
+			else
+			{
+				GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.CastTo) });
+			}
 		}
 	}
 

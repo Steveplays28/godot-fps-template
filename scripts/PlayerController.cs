@@ -1,4 +1,5 @@
 using Godot;
+using SteveUtility;
 
 public class PlayerController : RigidBody
 {
@@ -44,6 +45,7 @@ public class PlayerController : RigidBody
 		if (Input.IsActionJustReleased("restart"))
 		{
 			_ = GetTree().ReloadCurrentScene();
+			GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.ClearLines));
 		}
 
 		if (Input.IsActionJustPressed("escape"))
