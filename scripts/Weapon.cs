@@ -213,11 +213,11 @@ public class Weapon : Spatial
 
 			if (rayCast.IsColliding())
 			{
-				crosshair.RectPosition = camera.UnprojectPosition(rayCast.GetCollisionPoint());
+				crosshair.RectPosition = camera.UnprojectPosition(rayCast.GetCollisionPoint()) - crosshair.RectSize / 2;
 			}
 			else
 			{
-				crosshair.RectPosition = camera.UnprojectPosition(ToGlobal(rayCast.CastTo));
+				crosshair.RectPosition = camera.UnprojectPosition(ToGlobal(rayCast.CastTo)) - crosshair.RectSize / 2;
 			}
 		}
 	}
