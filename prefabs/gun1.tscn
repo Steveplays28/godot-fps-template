@@ -1,27 +1,7 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://resources/models/gun1/gun1.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/Weapon.cs" type="Script" id=2]
-
-[sub_resource type="Animation" id=27]
-resource_name = "idle"
-loop = true
-
-[sub_resource type="Animation" id=28]
-resource_name = "reload"
-length = 2.0
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:rotation_degrees")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5, 2 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
-"update": 0,
-"values": [ Vector3( 0, 0, 0 ), Vector3( 90, 0, 0 ), Vector3( 180, 0, 0 ), Vector3( 270, 0, 0 ), Vector3( 360, 0, 0 ) ]
-}
 
 [sub_resource type="Gradient" id=23]
 offsets = PoolRealArray( 0, 0.25, 0.75, 1 )
@@ -78,10 +58,6 @@ node_connections = [ "output", 0, "reload_one_shot", "reload_one_shot", 0, "idle
 transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 2 )
 script = ExtResource( 2 )
 AimDownSightPosition = Vector3( 0, -0.4, 0 )
-
-[node name="AnimationPlayer" parent="." index="2"]
-anims/idle = SubResource( 27 )
-anims/reload = SubResource( 28 )
 
 [node name="Muzzle" type="RayCast" parent="." index="3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -14 )
