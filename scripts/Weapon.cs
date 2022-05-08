@@ -9,7 +9,8 @@ public class Weapon : Spatial
 	[Export] public string UIManagerNodePath = "/root/UI";
 	[Export] public string HorizontalRotationNodePath = "/root/Spatial/Player/CollisionShape";
 	[Export] public string RayCastNodePath = "Muzzle";
-	[Export] public string ParticleSystemNodePath = "Muzzle/ParticleSystem";
+	[Export] public string MuzzleFlashNodePath = "Muzzle/MuzzleFlash";
+	[Export] public string SmokeTrailNodePath = "Muzzle/SmokeTrail";
 	[Export] public string AnimationTreeNodePath = "AnimationTree";
 	[Export] public Vector3 AimDownSightPosition;
 	[Export] public float AimDownSightSpeed = 0.25f;
@@ -28,7 +29,8 @@ public class Weapon : Spatial
 	private Control uiManager;
 	private Spatial horizontalRotationNode;
 	private RayCast rayCast;
-	private Particles particleSystem;
+	private Particles muzzleFlash;
+	private Particles smokeTrail;
 	private AnimationTree animationTree;
 	private Vector3 muzzlePosition;
 	private Vector3 initialPosition;
@@ -49,7 +51,8 @@ public class Weapon : Spatial
 		uiManager = GetNode<Control>(UIManagerNodePath);
 		horizontalRotationNode = GetNode<Spatial>(HorizontalRotationNodePath);
 		rayCast = GetNode<RayCast>(RayCastNodePath);
-		particleSystem = GetNode<Particles>(ParticleSystemNodePath);
+		muzzleFlash = GetNode<Particles>(MuzzleFlashNodePath);
+		smokeTrail = GetNode<Particles>(SmokeTrailNodePath);
 		animationTree = GetNode<AnimationTree>(AnimationTreeNodePath);
 		muzzlePosition = rayCast.GlobalTransform.origin;
 		initialPosition = Translation;
@@ -72,6 +75,11 @@ public class Weapon : Spatial
 		if (Input.IsActionPressed("shoot") || Input.IsActionJustPressed("shoot"))
 		{
 			Shoot();
+		}
+
+		if (Input.IsActionJustReleased("shoot"))
+		{
+			smokeTrail.Restart();
 		}
 
 		if (Input.IsActionJustPressed("reload"))
@@ -155,7 +163,7 @@ public class Weapon : Spatial
 		horizontalRotationNode.RotateY(Mathf.Deg2Rad(recoilHorizontal));
 
 		// Muzzle flash
-		particleSystem.Restart();
+		muzzleFlash.Restart();
 
 		// On hit
 		if (rayCast.Enabled && rayCast.IsColliding())
@@ -183,7 +191,7 @@ public class Weapon : Spatial
 
 	private async void Reload()
 	{
-		if (currentMagazineAmmoCount != MagazineAmmoCount)
+		if (currentMagazineAmmoCount != MagazineAmmoCount && !isReloading)
 		{
 			animationTree.Set("parameters/reload_one_shot/active", true);
 			ToggleCrosshairVisibility();
