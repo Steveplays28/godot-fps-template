@@ -102,21 +102,18 @@ public class Weapon : Node3D
 
 	private void ToggleAimDownSight()
 	{
-		Tween tween = this.CreateTween();
+		Tween tween = CreateTween();
 
 		if (isAimingDownSight)
 		{
-			tween.InterpolateProperty(this, "translation", null, initialPosition, AimDownSightSpeed);
+			tween.TweenProperty(this, "translation", initialPosition, AimDownSightSpeed);
 			isAimingDownSight = false;
 		}
 		else
 		{
-			tween.InterpolateProperty(this, "translation", null, AimDownSightPosition, AimDownSightSpeed);
+			tween.TweenProperty(this, "translation", AimDownSightPosition, AimDownSightSpeed);
 			isAimingDownSight = true;
 		}
-
-		tween.Start();
-		tween.DeleteOnAllCompleted();
 	}
 
 	private void Shoot()
@@ -236,18 +233,15 @@ public class Weapon : Node3D
 	private void ToggleCrosshairVisibility()
 	{
 		TextureRect crosshair = (TextureRect)uiManager.Get(nameof(UIManager.Crosshair));
-		Tween tween = this.CreateTween();
+		Tween tween = CreateTween();
 
 		if (crosshair.SelfModulate.a == 0f)
 		{
-			tween.InterpolateProperty(crosshair, "self_modulate", crosshair.SelfModulate, new Color(crosshair.SelfModulate.r, crosshair.SelfModulate.g, crosshair.SelfModulate.b, originalCrosshairSelfModulateAlpha), CrosshairFadeTime);
+			tween.TweenProperty(crosshair, "self_modulate", new Color(crosshair.SelfModulate.r, crosshair.SelfModulate.g, crosshair.SelfModulate.b, originalCrosshairSelfModulateAlpha), CrosshairFadeTime);
 		}
 		else
 		{
-			tween.InterpolateProperty(crosshair, "self_modulate", crosshair.SelfModulate, new Color(crosshair.SelfModulate.r, crosshair.SelfModulate.g, crosshair.SelfModulate.b, 0f), CrosshairFadeTime);
+			tween.TweenProperty(crosshair, "self_modulate", new Color(crosshair.SelfModulate.r, crosshair.SelfModulate.g, crosshair.SelfModulate.b, 0f), CrosshairFadeTime);
 		}
-
-		tween.Start();
-		tween.DeleteOnAllCompleted();
 	}
 }

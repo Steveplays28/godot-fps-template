@@ -20,7 +20,6 @@ public class PlayerController : RigidDynamicBody3D
 	public Vector3 WallrunDirectionChange { get; private set; } = Vector3.Zero;
 	public Vector3 WallNormal { get; private set; } = Vector3.Zero;
 	public float TimeUntilNextWallrun { get; private set; } = 0f;
-	public Vector3 LinearVelocityLocal { get; private set; } = Vector3.Zero;
 	public int jumpsLeft;
 
 	public Camera3D camera;
@@ -116,11 +115,11 @@ public class PlayerController : RigidDynamicBody3D
 
 		if (!Input.IsActionPressed("move_forward") && !Input.IsActionPressed("move_backwards"))
 		{
-			AddConstantCentralForce(-LinearVelocityLocal().z * collisionShape.GlobalTransform.basis.z * 1000f * deccelerationMultiplier);
+			AddConstantCentralForce(-GetLinearVelocityLocal().z * collisionShape.GlobalTransform.basis.z * 1000f * deccelerationMultiplier);
 		}
 		if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
 		{
-			AddConstantCentralForce(-LinearVelocityLocal().x * collisionShape.GlobalTransform.basis.x * 1000f * deccelerationMultiplier);
+			AddConstantCentralForce(-GetLinearVelocityLocal().x * collisionShape.GlobalTransform.basis.x * 1000f * deccelerationMultiplier);
 		}
 
 		AddConstantCentralForce(moveDirection);
@@ -138,16 +137,15 @@ public class PlayerController : RigidDynamicBody3D
 			GlobalTransform.origin + new Vector3(5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
 			new Godot.Collections.Array { this });
 
-		Vector3 normalRight = Vector3.Zero;
 		if (raycastResultRight.Contains("normal"))
 		{
-			normalRight = (Vector3)raycastResultRight["normal"];
-			StartWallrun(false, normalRight);
-			Wallrun(false, normalRight);
+			Vector3 normal = (Vector3)raycastResultRight["normal"];
+			StartWallrun(false, normal);
+			Wallrun(normal);
 		}
 		else
 		{
-			StopWallrun(false, normalRight);
+			StopWallrun();
 		}
 
 		// Left side raycast
@@ -155,16 +153,15 @@ public class PlayerController : RigidDynamicBody3D
 			GlobalTransform.origin + new Vector3(-5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
 			new Godot.Collections.Array { this });
 
-		Vector3 normalLeft = Vector3.Zero;
 		if (raycastResultLeft.Contains("normal"))
 		{
-			normalLeft = (Vector3)raycastResultLeft["normal"];
-			StartWallrun(true, normalLeft);
-			Wallrun(true, normalLeft);
+			Vector3 normal = (Vector3)raycastResultLeft["normal"];
+			StartWallrun(true, normal);
+			Wallrun(normal);
 		}
 		else
 		{
-			StopWallrun(true, normalLeft);
+			StopWallrun();
 		}
 
 		if (!IsWallrunningLeftSide && !IsWallrunningRightSide && TimeUntilNextWallrun > 0f)
@@ -223,7 +220,7 @@ public class PlayerController : RigidDynamicBody3D
 		return collisionShape.Rotation;
 	}
 
-	public Vector3 LinearVelocityLocal()
+	public Vector3 GetLinearVelocityLocal()
 	{
 		return LinearVelocity.Rotated(Vector3.Up, -GlobalRotation().y);
 	}
@@ -258,43 +255,43 @@ public class PlayerController : RigidDynamicBody3D
 		}
 	}
 
-	private void Wallrun(bool leftSide, Vector3 normal)
+	private void Wallrun(Vector3 wallNormal)
 	{
 		if (!IsWallrunningLeftSide && !IsWallrunningRightSide)
 		{
 			return;
 		}
 
-		float wallrunSideMultiplier = leftSide ? -1f : 1f;
+		float wallrunSideMultiplier = IsWallrunningLeftSide ? -1f : 1f;
 
-		WallNormal = normal;
-		WallrunDirection = normal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
+		WallNormal = wallNormal;
+		WallrunDirection = WallNormal.Rotated(Vector3.Up, Mathf.Deg2Rad(90f * wallrunSideMultiplier));
 		WallrunDirectionChange = WallrunDirectionLastFrame - WallrunDirection;
 
 		// TODO: Always add custom gravity for a small period of time after starting a wallrun
-		if (LinearVelocityLocal().z <= 0f)
+		if (GetLinearVelocityLocal().z <= 0f)
 		{
 			// Custom gravity
-			AddConstantCentralForce(normal * -LinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
+			AddConstantCentralForce(WallNormal * -GetLinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
 
 			// Rotate camera along wall
-			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
+			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * GetLinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 		else
 		{
 			// Custom gravity
-			AddConstantCentralForce(normal * -LinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
+			AddConstantCentralForce(WallNormal * -GetLinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
 
 			// Rotate camera along wall
-			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * LinearVelocityLocal().z * wallrunSideMultiplier * 5f));
+			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * GetLinearVelocityLocal().z * wallrunSideMultiplier * 5f));
 		}
 
 		WallrunDirectionLastFrame = WallrunDirection;
 	}
 
-	private void StopWallrun(bool leftSide, Vector3 normal)
+	private void StopWallrun()
 	{
-		if (IsWallrunningRightSide && !leftSide)
+		if (IsWallrunningRightSide && !IsWallrunningLeftSide)
 		{
 			// Stop wallrunning on the right side
 			TimeUntilNextWallrun = wallrunTimeout;
@@ -306,7 +303,7 @@ public class PlayerController : RigidDynamicBody3D
 
 			GD.Print("stop wallrun");
 		}
-		else if (IsWallrunningLeftSide && leftSide)
+		else if (IsWallrunningLeftSide && !IsWallrunningRightSide)
 		{
 			// Stop wallrunning on the left side
 			TimeUntilNextWallrun = wallrunTimeout;
@@ -326,7 +323,7 @@ public class PlayerController : RigidDynamicBody3D
 		{
 			if (IsWallrunningLeftSide || IsWallrunningRightSide)
 			{
-				StopWallrun(IsWallrunningLeftSide, WallNormal);
+				StopWallrun();
 				AddConstantCentralForce(WallNormal * 100000f);
 				AddConstantCentralForce(collisionShape.GlobalTransform.basis.y * 25000f);
 			}
