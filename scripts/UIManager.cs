@@ -2,7 +2,7 @@ using System;
 using Godot;
 using SteveUtility;
 
-public class UIManager : Control
+public partial class UIManager : Control
 {
 	[Export] public bool IsNonDebugUIVisible = true;
 	[Export] public bool IsDebugUIVisible = true;

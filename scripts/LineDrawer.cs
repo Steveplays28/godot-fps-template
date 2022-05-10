@@ -2,7 +2,7 @@ using Godot;
 
 namespace SteveUtility
 {
-	public class LineDrawer : ImmediateMesh
+	public partial class LineDrawer : ImmediateMesh
 	{
 		public void DrawLine(Vector3[] points)
 		{

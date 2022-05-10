@@ -2,7 +2,7 @@ using System;
 using Godot;
 using SteveUtility;
 
-public class Weapon : Node3D
+public partial class Weapon : Node3D
 {
 	[Export] public string PlayerNodePath = "/root/Spatial/Player";
 	[Export] public string CameraNodePath = "/root/Spatial/Player/CollisionShape/Camera";

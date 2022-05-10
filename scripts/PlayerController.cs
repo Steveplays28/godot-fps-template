@@ -1,7 +1,7 @@
 using Godot;
 using SteveUtility;
 
-public class PlayerController : RigidDynamicBody3D
+public partial class PlayerController : RigidDynamicBody3D
 {
 	[Export] public float MaxRotationXDegrees = 90f;
 	[Export] public Vector2 sensitivity = new Vector2(0.5f, 0.5f);
@@ -129,39 +129,16 @@ public class PlayerController : RigidDynamicBody3D
 	{
 		base._PhysicsProcess(delta);
 
-		PhysicsDirectSpaceState3D spaceState = GetWorld3d().DirectSpaceState;
-
-		// Use global coordinates instead of local coordinates for raycasts
-		// Right side raycast
-		Godot.Collections.Dictionary raycastResultRight = spaceState.IntersectRay(GlobalTransform.origin,
-			GlobalTransform.origin + new Vector3(5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
-			new Godot.Collections.Array { this });
-
-		if (raycastResultRight.Contains("normal"))
+		foreach (RayCast3D rayCast in GetTree().GetNodesInGroup("wallrun_raycasts"))
 		{
-			Vector3 normal = (Vector3)raycastResultRight["normal"];
-			StartWallrun(false, normal);
-			Wallrun(normal);
-		}
-		else
-		{
-			StopWallrun();
-		}
+			if (!rayCast.Enabled || !rayCast.IsColliding())
+			{
+				continue;
+			}
 
-		// Left side raycast
-		Godot.Collections.Dictionary raycastResultLeft = spaceState.IntersectRay(GlobalTransform.origin,
-			GlobalTransform.origin + new Vector3(-5f, 0f, 0f).Rotated(Vector3.Up, GlobalRotation().y),
-			new Godot.Collections.Array { this });
-
-		if (raycastResultLeft.Contains("normal"))
-		{
-			Vector3 normal = (Vector3)raycastResultLeft["normal"];
-			StartWallrun(true, normal);
-			Wallrun(normal);
-		}
-		else
-		{
-			StopWallrun();
+			Vector3 collisionNormal = rayCast.GetCollisionNormal();
+			StartWallrun(false, collisionNormal);
+			Wallrun(collisionNormal);
 		}
 
 		if (!IsWallrunningLeftSide && !IsWallrunningRightSide && TimeUntilNextWallrun > 0f)
