@@ -2,7 +2,7 @@ using System;
 using Godot;
 using SteveUtility;
 
-public class Weapon : Spatial
+public class Weapon : Node3D
 {
 	[Export] public string PlayerNodePath = "/root/Spatial/Player";
 	[Export] public string CameraNodePath = "/root/Spatial/Player/CollisionShape/Camera";
@@ -24,13 +24,16 @@ public class Weapon : Spatial
 	[Export] public float ReloadTime = 2f;
 	[Export] public float CrosshairFadeTime = 0.1f;
 
-	private Spatial player;
-	private Camera camera;
+	delegate void TextChangedHandler(string text);
+	[Signal] event TextChangedHandler TextChanged;
+
+	private Node3D player;
+	private Camera3D camera;
 	private Control uiManager;
-	private Spatial horizontalRotationNode;
-	private RayCast rayCast;
-	private Particles muzzleFlash;
-	private Particles smokeTrail;
+	private Node3D horizontalRotationNode;
+	private RayCast3D rayCast;
+	private GPUParticles3D muzzleFlash;
+	private GPUParticles3D smokeTrail;
 	private AnimationTree animationTree;
 	private Vector3 muzzlePosition;
 	private Vector3 initialPosition;
@@ -46,16 +49,16 @@ public class Weapon : Spatial
 	{
 		base._Ready();
 
-		player = GetNode<Spatial>(PlayerNodePath);
-		camera = GetNode<Camera>(CameraNodePath);
+		player = GetNode<Node3D>(PlayerNodePath);
+		camera = GetNode<Camera3D>(CameraNodePath);
 		uiManager = GetNode<Control>(UIManagerNodePath);
-		horizontalRotationNode = GetNode<Spatial>(HorizontalRotationNodePath);
-		rayCast = GetNode<RayCast>(RayCastNodePath);
-		muzzleFlash = GetNode<Particles>(MuzzleFlashNodePath);
-		smokeTrail = GetNode<Particles>(SmokeTrailNodePath);
+		horizontalRotationNode = GetNode<Node3D>(HorizontalRotationNodePath);
+		rayCast = GetNode<RayCast3D>(RayCastNodePath);
+		muzzleFlash = GetNode<GPUParticles3D>(MuzzleFlashNodePath);
+		smokeTrail = GetNode<GPUParticles3D>(SmokeTrailNodePath);
 		animationTree = GetNode<AnimationTree>(AnimationTreeNodePath);
 		muzzlePosition = rayCast.GlobalTransform.origin;
-		initialPosition = Translation;
+		initialPosition = Transform.origin;
 		currentMagazineAmmoCount = MagazineAmmoCount;
 		currentBarrelAmmoCount = BarrelAmmoCount;
 		rng = new RandomNumberGenerator();
@@ -145,14 +148,14 @@ public class Weapon : Spatial
 		float recoilVertical = rng.RandfRange(RecoilVerticalLowerLimitDegrees, RecoilVerticalUpperLimitDegrees);
 		if (recoilVertical >= 0)
 		{
-			if (camera.RotationDegrees.x <= maxRotationXDegrees && camera.RotationDegrees.x + recoilVertical <= maxRotationXDegrees)
+			if (camera.Rotation.x <= maxRotationXDegrees && camera.Rotation.x + recoilVertical <= maxRotationXDegrees)
 			{
 				camera.RotateX(Mathf.Deg2Rad(recoilVertical));
 			}
 		}
 		else
 		{
-			if (camera.RotationDegrees.x >= -maxRotationXDegrees && camera.RotationDegrees.x + recoilVertical >= -maxRotationXDegrees)
+			if (camera.Rotation.x >= -maxRotationXDegrees && camera.Rotation.x + recoilVertical >= -maxRotationXDegrees)
 			{
 				camera.RotateX(Mathf.Deg2Rad(recoilVertical));
 			}
@@ -184,7 +187,7 @@ public class Weapon : Spatial
 			}
 			else
 			{
-				lineDrawer.Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.CastTo) }, new Color(255, 0, 0));
+				lineDrawer.Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.TargetPosition) }, new Color(255, 0, 0));
 			}
 		}
 	}
@@ -221,11 +224,11 @@ public class Weapon : Spatial
 
 			if (rayCast.IsColliding())
 			{
-				crosshair.RectPosition = camera.UnprojectPosition(rayCast.GetCollisionPoint()) - crosshair.RectSize / 2;
+				crosshair.GlobalPosition = camera.UnprojectPosition(rayCast.GetCollisionPoint()) - crosshair.Size / 2;
 			}
 			else
 			{
-				crosshair.RectPosition = camera.UnprojectPosition(ToGlobal(rayCast.CastTo)) - crosshair.RectSize / 2;
+				crosshair.GlobalPosition = camera.UnprojectPosition(ToGlobal(rayCast.TargetPosition)) - crosshair.Size / 2;
 			}
 		}
 	}

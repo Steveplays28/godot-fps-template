@@ -46,7 +46,7 @@ public class UIManager : Control
 
 		if (IsDebugUIVisible)
 		{
-			RigidBody player = GetNode<RigidBody>("/root/Spatial/Player");
+			RigidDynamicBody3D player = GetNode<RigidDynamicBody3D>("/root/Spatial/Player");
 			DebugLabel.Text = $"FPS: {1 / delta}\n\nGlobal position: {player.GlobalTransform.origin}\nGlobal linear velocity: {player.LinearVelocity}\n\nLocal linear velocity: {player.Call(nameof(PlayerController.LinearVelocityLocal))}";
 		}
 
@@ -58,6 +58,11 @@ public class UIManager : Control
 		if (Input.IsActionJustPressed("toggle_debug_ui_visibility"))
 		{
 			ToggleDebugUIVisibility();
+		}
+
+		if (Input.IsActionJustReleased("restart"))
+		{
+			GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.ClearLines));
 		}
 	}
 

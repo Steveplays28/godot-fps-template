@@ -2,56 +2,38 @@ using Godot;
 
 namespace SteveUtility
 {
-	public class LineDrawer : ImmediateGeometry
+	public class LineDrawer : ImmediateMesh
 	{
-		public override void _Process(float delta)
-		{
-			if (Input.IsActionJustReleased("restart"))
-			{
-				ClearLines();
-			}
-		}
-
 		public void DrawLine(Vector3[] points)
 		{
-			if (!(bool)GetNode("/root/UI").Get(nameof(UIManager.IsDebugUIVisible)))
-			{
-				return;
-			}
-
-			Begin(Mesh.PrimitiveType.Lines);
+			SurfaceBegin(PrimitiveType.Lines);
 			for (int i = 0; i < points.Length; ++i)
 			{
-				AddVertex(points[i]);
+				SurfaceAddVertex(points[i]);
 			}
-			End();
+			SurfaceEnd();
 		}
 		public void DrawLine(Vector3[] points, Color color)
 		{
-			if (!(bool)GetNode("/root/UI").Get(nameof(UIManager.IsDebugUIVisible)))
+			SurfaceBegin(PrimitiveType.Lines);
+			BaseMaterial3D material = new StandardMaterial3D
 			{
-				return;
-			}
-
-			Begin(Mesh.PrimitiveType.Lines);
-			var spatialMaterial = new SpatialMaterial
-			{
-				FlagsUsePointSize = true,
-				ParamsPointSize = 5f,
+				UsePointSize = true,
+				PointSize = 5f,
 				VertexColorUseAsAlbedo = true
 			};
-			MaterialOverride = spatialMaterial;
-			SetColor(color);
+			SurfaceSetMaterial(GetSurfaceCount() - 1, material);
+			SurfaceSetColor(color);
 			for (int i = 0; i < points.Length; ++i)
 			{
-				AddVertex(points[i]);
+				SurfaceAddVertex(points[i]);
 			}
-			End();
+			SurfaceEnd();
 		}
 
 		public void ClearLines()
 		{
-			Clear();
+			ClearSurfaces();
 		}
 	}
 }
