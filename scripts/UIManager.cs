@@ -47,7 +47,7 @@ public class UIManager : Control
 		if (IsDebugUIVisible)
 		{
 			RigidDynamicBody3D player = GetNode<RigidDynamicBody3D>("/root/Spatial/Player");
-			DebugLabel.Text = $"FPS: {1 / delta}\n\nGlobal position: {player.GlobalTransform.origin}\nGlobal linear velocity: {player.LinearVelocity}\n\nLocal linear velocity: {player.Call(nameof(PlayerController.LinearVelocityLocal))}";
+			DebugLabel.Text = $"FPS: {1 / delta}\n\nGlobal position: {player.GlobalTransform.origin}\nGlobal linear velocity: {player.LinearVelocity}\n\nLocal linear velocity: {player.Call(nameof(PlayerController.GetLinearVelocityLocal))}";
 		}
 
 		if (Input.IsActionJustPressed("toggle_non_debug_ui_visibility"))
