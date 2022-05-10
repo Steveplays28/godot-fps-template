@@ -46,8 +46,10 @@ public partial class PlayerController : RigidDynamicBody3D
 
 		if (Input.IsActionJustReleased("restart"))
 		{
-			_ = GetTree().ReloadCurrentScene();
-			GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.ClearLines));
+			GetTree().ReloadCurrentScene();
+
+			LineDrawer lineDrawer = (LineDrawer)GetNode("/root/Debug").Get(nameof(DebugHelper.LineDrawer));
+			lineDrawer.ClearLines();
 		}
 
 		if (Input.IsActionJustPressed("escape"))

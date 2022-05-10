@@ -16,6 +16,13 @@ namespace SteveUtility
 		public void DrawLine(Vector3[] points, Color color)
 		{
 			SurfaceBegin(PrimitiveType.Lines);
+			SurfaceSetColor(color);
+			for (int i = 0; i < points.Length; ++i)
+			{
+				SurfaceAddVertex(points[i]);
+			}
+			SurfaceEnd();
+
 			BaseMaterial3D material = new StandardMaterial3D
 			{
 				UsePointSize = true,
@@ -23,12 +30,6 @@ namespace SteveUtility
 				VertexColorUseAsAlbedo = true
 			};
 			SurfaceSetMaterial(GetSurfaceCount() - 1, material);
-			SurfaceSetColor(color);
-			for (int i = 0; i < points.Length; ++i)
-			{
-				SurfaceAddVertex(points[i]);
-			}
-			SurfaceEnd();
 		}
 
 		public void ClearLines()

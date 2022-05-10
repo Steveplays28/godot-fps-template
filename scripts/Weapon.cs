@@ -24,9 +24,6 @@ public partial class Weapon : Node3D
 	[Export] public float ReloadTime = 2f;
 	[Export] public float CrosshairFadeTime = 0.1f;
 
-	delegate void TextChangedHandler(string text);
-	[Signal] event TextChangedHandler TextChanged;
-
 	private Node3D player;
 	private Camera3D camera;
 	private Control uiManager;
@@ -176,15 +173,15 @@ public partial class Weapon : Node3D
 		// Debug
 		if (rayCast.Enabled)
 		{
-			Node lineDrawer = GetNode("/root/Debug/LineDrawer");
+			LineDrawer lineDrawer = (LineDrawer)GetNode("/root/Debug").Get(nameof(DebugHelper.LineDrawer));
 
 			if (rayCast.IsColliding())
 			{
-				lineDrawer.Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, rayCast.GetCollisionPoint() }, new Color(255, 0, 0));
+				lineDrawer.DrawLine(new[] { rayCast.GlobalTransform.origin, rayCast.GetCollisionPoint() }, new Color(255, 0, 0));
 			}
 			else
 			{
-				lineDrawer.Call(nameof(LineDrawer.DrawLine), new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.TargetPosition) }, new Color(255, 0, 0));
+				lineDrawer.DrawLine(new[] { rayCast.GlobalTransform.origin, ToGlobal(rayCast.TargetPosition) }, new Color(255, 0, 0));
 			}
 		}
 	}

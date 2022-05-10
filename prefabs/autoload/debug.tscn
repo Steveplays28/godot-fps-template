@@ -1,8 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bvmf8cttxl7td"]
 
-[ext_resource type="Script" path="res://scripts/LineDrawer.cs" id="1"]
+[ext_resource type="Script" path="res://scripts/DebugHelper.cs" id="1_wui1i"]
 
 [node name="Debug" type="Node"]
-
-[node name="LineDrawer" type="MeshInstance3D" parent="."]
-script = ExtResource( "1" )
+script = ExtResource( "1_wui1i" )
