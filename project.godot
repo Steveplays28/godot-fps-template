@@ -103,7 +103,6 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
-vulkan/rendering/back_end=1
 quality/directional_shadow/size=2048
 quality/shadows/filter_mode=2
 quality/filters/msaa=2
