@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://sd6t4lxw40wh"]
+
+[ext_resource type="Script" path="res://scripts/Melee.cs" id="1_pge2t"]
+
+[node name="Melee" type="Node3D"]
+script = ExtResource( "1_pge2t" )
+RayCastNode = NodePath(".")

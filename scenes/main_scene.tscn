@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://cautcwkislu24"]
+[gd_scene load_steps=14 format=3 uid="uid://cautcwkislu24"]
 
 [ext_resource type="Script" path="res://scripts/PlayerController.cs" id="1"]
 [ext_resource type="PhysicsMaterial" path="res://resources/materials/physics/zero_friction.tres" id="2"]
 [ext_resource type="Material" path="res://resources/materials/blue.tres" id="2_k36jp"]
 [ext_resource type="Environment" uid="uid://dwvyt6a6uebxe" path="res://main_environment.tres" id="3"]
+[ext_resource type="PackedScene" uid="uid://sd6t4lxw40wh" path="res://prefabs/melee.tscn" id="6_nekng"]
 [ext_resource type="PackedScene" uid="uid://c6h1i6m47tbve" path="res://prefabs/gun1.tscn" id="7"]
 
 [sub_resource type="BoxShape3D" id="4"]
@@ -117,3 +118,5 @@ target_position = Vector3(-5, 0, 0)
 [node name="WallRayCast4" type="RayCast3D" parent="Player/CollisionShape" groups=["wallrun_raycasts"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115672, 0)
 target_position = Vector3(5, 0, 0)
+
+[node name="Melee" parent="Player" instance=ExtResource( "6_nekng" )]
