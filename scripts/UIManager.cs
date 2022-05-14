@@ -62,7 +62,20 @@ public partial class UIManager : Control
 
 		if (Input.IsActionJustReleased("restart"))
 		{
-			GetNode("/root/Debug/LineDrawer").Call(nameof(LineDrawer.ClearLines));
+			LineDrawer lineDrawer = (LineDrawer)GetNode("/root/Debug").Get(nameof(DebugHelper.LineDrawer));
+			lineDrawer.ClearLines();
+		}
+
+		if (Input.IsActionJustPressed("toggle_mouse_visibility"))
+		{
+			if (Input.GetMouseMode() == Input.MouseMode.Visible)
+			{
+				Input.SetMouseMode(Input.MouseMode.Captured);
+			}
+			else
+			{
+				Input.SetMouseMode(Input.MouseMode.Visible);
+			}
 		}
 	}
 

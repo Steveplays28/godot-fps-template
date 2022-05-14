@@ -1,10 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://cautcwkislu24"]
+[gd_scene load_steps=13 format=3 uid="uid://cautcwkislu24"]
 
 [ext_resource type="Script" path="res://scripts/PlayerController.cs" id="1"]
 [ext_resource type="PhysicsMaterial" path="res://resources/materials/physics/zero_friction.tres" id="2"]
 [ext_resource type="Material" path="res://resources/materials/blue.tres" id="2_k36jp"]
 [ext_resource type="Environment" uid="uid://dwvyt6a6uebxe" path="res://main_environment.tres" id="3"]
-[ext_resource type="PackedScene" path="res://prefabs/gun1.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://c6h1i6m47tbve" path="res://prefabs/gun1.tscn" id="7"]
 
 [sub_resource type="BoxShape3D" id="4"]
 
@@ -13,6 +13,11 @@
 [sub_resource type="CylinderShape3D" id="6"]
 
 [sub_resource type="CylinderMesh" id="7"]
+
+[sub_resource type="Curve" id="Curve_hxmfy"]
+min_value = 1.0
+max_value = 10.0
+_data = [Vector2(0, 5.99091), 0.0, 0.0, 0, 0, Vector2(0.0905923, 5.82727), -30.3882, -30.3882, 0, 0, Vector2(0.191638, 2.88182), -5.9501e-06, -5.9501e-06, 0, 0, Vector2(0.362369, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), -6.22056e-06, 0.0, 0, 0]
 
 [sub_resource type="BoxShape3D" id="2"]
 size = Vector3(2, 4, 2)
@@ -75,10 +80,12 @@ continuous_cd = true
 contacts_reported = 1
 contact_monitor = true
 can_sleep = false
+lock_rotation = true
 script = ExtResource( "1" )
 sensitivity = Vector2(0.12, 0.12)
 accelerationMultiplier = 10.0
 deccelerationMultiplier = 0.5
+WallrunVelocityMultiplierCurve = SubResource( "Curve_hxmfy" )
 
 [node name="CollisionShape" type="CollisionShape3D" parent="Player"]
 shape = SubResource( "2" )
@@ -92,20 +99,21 @@ fov = 90.0
 
 [node name="Gun1" parent="Player/CollisionShape/Camera" instance=ExtResource( "7" )]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 1.5, -0.5, 0.5)
-AimDownSightPosition = Vector3(0, -0.4, -0.5)
 
-[node name="WallRayCast1" type="RayCast3D" parent="Player/CollisionShape"]
+[node name="WallRayCast1" type="RayCast3D" parent="Player/CollisionShape" groups=["wallrun_raycasts"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115672, 0)
+enabled = false
 target_position = Vector3(0, 0, -5)
 
-[node name="WallRayCast2" type="RayCast3D" parent="Player/CollisionShape"]
+[node name="WallRayCast2" type="RayCast3D" parent="Player/CollisionShape" groups=["wallrun_raycasts"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115672, 0)
+enabled = false
 target_position = Vector3(0, 0, 5)
 
-[node name="WallRayCast3" type="RayCast3D" parent="Player/CollisionShape"]
+[node name="WallRayCast3" type="RayCast3D" parent="Player/CollisionShape" groups=["wallrun_raycasts"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115672, 0)
 target_position = Vector3(-5, 0, 0)
 
-[node name="WallRayCast4" type="RayCast3D" parent="Player/CollisionShape"]
+[node name="WallRayCast4" type="RayCast3D" parent="Player/CollisionShape" groups=["wallrun_raycasts"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115672, 0)
 target_position = Vector3(5, 0, 0)

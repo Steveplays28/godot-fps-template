@@ -103,12 +103,12 @@ public partial class Weapon : Node3D
 
 		if (isAimingDownSight)
 		{
-			tween.TweenProperty(this, "translation", initialPosition, AimDownSightSpeed);
+			tween.TweenProperty(this, "position", initialPosition, AimDownSightSpeed);
 			isAimingDownSight = false;
 		}
 		else
 		{
-			tween.TweenProperty(this, "translation", AimDownSightPosition, AimDownSightSpeed);
+			tween.TweenProperty(this, "position", AimDownSightPosition, AimDownSightSpeed);
 			isAimingDownSight = true;
 		}
 	}

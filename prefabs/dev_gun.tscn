@@ -1,103 +1,106 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=3 uid="uid://01sda3raki81"]
 
-[ext_resource path="res://scripts/Weapon.cs" type="Script" id=1]
+[ext_resource type="Script" path="res://scripts/Weapon.cs" id="1"]
 
-[sub_resource type="CubeMesh" id=8]
+[sub_resource type="BoxMesh" id="8"]
 
-[sub_resource type="Gradient" id=13]
-offsets = PoolRealArray( 0, 0.25, 0.75, 1 )
-colors = PoolColorArray( 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 )
+[sub_resource type="Gradient" id="13"]
+offsets = PackedFloat32Array(0, 0.25, 0.75, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 
-[sub_resource type="GradientTexture" id=23]
-gradient = SubResource( 13 )
+[sub_resource type="GradientTexture1D" id="23"]
+gradient = SubResource( "13" )
 
-[sub_resource type="Curve" id=11]
+[sub_resource type="Curve" id="11"]
 min_value = 1.0
 max_value = 2.0
-_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.125, 2 ), 0.0, 0.0, 0, 0 ]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.125, 2), 0.0, 0.0, 0, 0]
 
-[sub_resource type="CurveTexture" id=24]
-curve = SubResource( 11 )
+[sub_resource type="CurveTexture" id="24"]
+curve = SubResource( "11" )
 
-[sub_resource type="ParticlesMaterial" id=10]
-gravity = Vector3( 0, 0, 0 )
-scale_curve = SubResource( 24 )
-color_ramp = SubResource( 23 )
+[sub_resource type="ParticlesMaterial" id="10"]
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource( "24" )
+color_ramp = SubResource( "23" )
 
-[sub_resource type="SpatialMaterial" id=25]
-flags_transparent = true
+[sub_resource type="StandardMaterial3D" id="25"]
+transparency = 1
 vertex_color_use_as_albedo = true
 
-[sub_resource type="QuadMesh" id=9]
-material = SubResource( 25 )
-size = Vector2( 2, 2 )
+[sub_resource type="QuadMesh" id="9"]
+material = SubResource( "25" )
+size = Vector2(2, 2)
 
-[sub_resource type="Animation" id=21]
+[sub_resource type="Animation" id="21"]
 resource_name = "idle"
-loop = true
 
-[sub_resource type="Animation" id=18]
+[sub_resource type="Animation" id="18"]
 resource_name = "reload"
 length = 2.0
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath(".:rotation_degrees")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5, 2 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
-"values": [ Vector3( 0, 0, 0 ), Vector3( 90, 0, 0 ), Vector3( 180, 0, 0 ), Vector3( 270, 0, 0 ), Vector3( 360, 0, 0 ) ]
+"values": [Vector3(0, 0, 0), Vector3(90, 0, 0), Vector3(180, 0, 0), Vector3(270, 0, 0), Vector3(360, 0, 0)]
 }
 
-[sub_resource type="AnimationNodeAnimation" id=22]
-animation = "idle"
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hbnhd"]
+_data = {
+"idle": SubResource( "21" ),
+"reload": SubResource( "18" )
+}
 
-[sub_resource type="AnimationNodeAnimation" id=19]
-animation = "reload"
+[sub_resource type="AnimationNodeAnimation" id="22"]
+animation = &"idle"
 
-[sub_resource type="AnimationNodeOneShot" id=20]
+[sub_resource type="AnimationNodeAnimation" id="19"]
+animation = &"reload"
 
-[sub_resource type="AnimationNodeBlendTree" id=16]
-graph_offset = Vector2( -600.5, 24.7083 )
-nodes/idle_animation/node = SubResource( 22 )
-nodes/idle_animation/position = Vector2( -180, 60 )
-nodes/reload_animation/node = SubResource( 19 )
-nodes/reload_animation/position = Vector2( -180, 180 )
-nodes/reload_one_shot/node = SubResource( 20 )
-nodes/reload_one_shot/position = Vector2( 60, 120 )
-node_connections = [ "output", 0, "reload_one_shot", "reload_one_shot", 0, "idle_animation", "reload_one_shot", 1, "reload_animation" ]
+[sub_resource type="AnimationNodeOneShot" id="20"]
 
-[node name="DevGun" type="MeshInstance"]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, 1.5, -0.5, -1.5 )
-mesh = SubResource( 8 )
+[sub_resource type="AnimationNodeBlendTree" id="16"]
+graph_offset = Vector2(-600.5, 24.7083)
+nodes/idle_animation/node = SubResource( "22" )
+nodes/idle_animation/position = Vector2(-180, 60)
+nodes/reload_animation/node = SubResource( "19" )
+nodes/reload_animation/position = Vector2(-180, 180)
+nodes/reload_one_shot/node = SubResource( "20" )
+nodes/reload_one_shot/position = Vector2(60, 120)
+node_connections = [&"reload_one_shot", 0, &"idle_animation", &"reload_one_shot", 1, &"reload_animation", &"output", 0, &"reload_one_shot"]
+
+[node name="DevGun" type="MeshInstance3D"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, 1.5, -0.5, -1.5)
+mesh = SubResource( "8" )
 skeleton = NodePath("../../..")
-material/0 = null
-script = ExtResource( 1 )
-AimDownSightPosition = Vector3( 0, -0.4, -2 )
+script = ExtResource( "1" )
+AimDownSightPosition = Vector3(0, -0.4, -2)
 
-[node name="Muzzle" type="RayCast" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1 )
-enabled = true
-cast_to = Vector3( 0, 0, -10000 )
+[node name="Muzzle" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 
-[node name="ParticleSystem" type="Particles" parent="Muzzle"]
+[node name="ParticleSystem" type="GPUParticles3D" parent="Muzzle"]
 emitting = false
 amount = 1
 lifetime = 0.5
 one_shot = true
-visibility_aabb = AABB( -7.5, -7.5, -7.5, 15, 15, 15 )
-process_material = SubResource( 10 )
-draw_pass_1 = SubResource( 9 )
+visibility_aabb = AABB(-7.5, -7.5, -7.5, 15, 15, 15)
+process_material = SubResource( "10" )
+draw_pass_1 = SubResource( "9" )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/idle = SubResource( 21 )
-anims/reload = SubResource( 18 )
+libraries = {
+"": SubResource( "AnimationLibrary_hbnhd" )
+}
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = SubResource( 16 )
+tree_root = SubResource( "16" )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/reload_one_shot/active = false

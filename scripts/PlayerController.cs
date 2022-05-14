@@ -11,6 +11,7 @@ public partial class PlayerController : RigidDynamicBody3D
 	[Export] public float stopVelocityTreshold = 1f;
 	[Export] public int maxJumps = 2;
 	[Export] public float wallrunTimeout = 2f;
+	[Export] public Curve WallrunVelocityMultiplierCurve;
 
 	public bool IsSprinting { get; private set; } = false;
 	public bool IsWallrunningRightSide { get; private set; } = false;
@@ -49,18 +50,6 @@ public partial class PlayerController : RigidDynamicBody3D
 
 			LineDrawer lineDrawer = (LineDrawer)GetNode("/root/Debug").Get(nameof(DebugHelper.LineDrawer));
 			lineDrawer.ClearLines();
-		}
-
-		if (Input.IsActionJustPressed("escape"))
-		{
-			if (Input.GetMouseMode() == Input.MouseMode.Visible)
-			{
-				Input.SetMouseMode(Input.MouseMode.Captured);
-			}
-			else
-			{
-				Input.SetMouseMode(Input.MouseMode.Visible);
-			}
 		}
 
 		if (Input.IsActionJustPressed("jump"))
@@ -116,14 +105,14 @@ public partial class PlayerController : RigidDynamicBody3D
 
 		if (!Input.IsActionPressed("move_forward") && !Input.IsActionPressed("move_backwards"))
 		{
-			AddConstantCentralForce(-GetLinearVelocityLocal().z * collisionShape.GlobalTransform.basis.z * 1000f * deccelerationMultiplier);
+			ApplyCentralForce(-GetLinearVelocityLocal().z * collisionShape.GlobalTransform.basis.z * 1000f * deccelerationMultiplier);
 		}
 		if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
 		{
-			AddConstantCentralForce(-GetLinearVelocityLocal().x * collisionShape.GlobalTransform.basis.x * 1000f * deccelerationMultiplier);
+			ApplyCentralForce(-GetLinearVelocityLocal().x * collisionShape.GlobalTransform.basis.x * 1000f * deccelerationMultiplier);
 		}
 
-		AddConstantCentralForce(moveDirection);
+		ApplyCentralForce(moveDirection);
 	}
 
 	public override void _PhysicsProcess(float delta)
@@ -250,18 +239,20 @@ public partial class PlayerController : RigidDynamicBody3D
 		if (GetLinearVelocityLocal().z <= 0f)
 		{
 			// Custom gravity
-			AddConstantCentralForce(WallNormal * -GetLinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
+			ApplyCentralForce(WallNormal * -GetLinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
 
 			// Rotate camera along wall
-			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * GetLinearVelocityLocal().z * wallrunSideMultiplier * 5f));
+			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * (GetLinearVelocityLocal().z * WallrunVelocityMultiplierCurve.Interpolate(GetLinearVelocityLocal().Abs().z / 100f)) * wallrunSideMultiplier));
+			GD.Print($"{WallrunVelocityMultiplierCurve.Interpolate(GetLinearVelocityLocal().Abs().z / 100f)}\n");
 		}
 		else
 		{
 			// Custom gravity
-			AddConstantCentralForce(WallNormal * -GetLinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
+			ApplyCentralForce(WallNormal * -GetLinearVelocityLocal().Abs().Length() * WallrunDirectionChange.Length() * 100000f);
 
 			// Rotate camera along wall
-			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * GetLinearVelocityLocal().z * wallrunSideMultiplier * 5f));
+			collisionShape.RotateY(Mathf.Deg2Rad(WallrunDirectionChange.Length() * (GetLinearVelocityLocal().z * WallrunVelocityMultiplierCurve.Interpolate(GetLinearVelocityLocal().Abs().z / 100f)) * wallrunSideMultiplier));
+			GD.Print($"{WallrunVelocityMultiplierCurve.Interpolate(GetLinearVelocityLocal().Abs().z / 100f)}\n");
 		}
 
 		WallrunDirectionLastFrame = WallrunDirection;
