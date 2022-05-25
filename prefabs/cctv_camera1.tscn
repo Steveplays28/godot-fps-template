@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://resources/models/cctv_camera1/cctv_camera1.glb" type="PackedScene" id=1]
+[ext_resource path="res://scripts/CCTVCamera.cs" type="Script" id=2]
+
+[node name="cctv_camera1" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+CameraNodePath = NodePath("Viewport/Camera")
+CameraPosition = Vector3( 0, -0.8, -1 )
+
+[node name="Viewport" type="Viewport" parent="." index="2"]
+size = Vector2( 768, 432 )
+
+[node name="Camera" type="Camera" parent="Viewport" index="0"]
+transform = Transform( 1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, -0.8, -1 )
+fov = 90.0
