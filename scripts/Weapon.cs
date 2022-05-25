@@ -52,7 +52,7 @@ public class Weapon : Spatial
 		horizontalRotationNode = GetNode<Spatial>(HorizontalRotationNodePath);
 		rayCast = GetNode<RayCast>(RayCastNodePath);
 		muzzleFlash = GetNode<Particles>(MuzzleFlashNodePath);
-		smokeTrail = GetNode<Particles>(SmokeTrailNodePath);
+		smokeTrail = GetNodeOrNull<Particles>(SmokeTrailNodePath);
 		animationTree = GetNode<AnimationTree>(AnimationTreeNodePath);
 		muzzlePosition = rayCast.GlobalTransform.origin;
 		initialPosition = Translation;
@@ -79,7 +79,7 @@ public class Weapon : Spatial
 
 		if (Input.IsActionJustReleased("shoot"))
 		{
-			smokeTrail.Restart();
+			SmokeTrail();
 		}
 
 		if (Input.IsActionJustPressed("reload"))
@@ -246,5 +246,13 @@ public class Weapon : Spatial
 
 		tween.Start();
 		tween.DeleteOnAllCompleted();
+	}
+
+	public void SmokeTrail()
+	{
+		if (smokeTrail != null)
+		{
+			smokeTrail.Restart();
+		}
 	}
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://resources/models/gun1/gun1.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/Weapon.cs" type="Script" id=2]
@@ -31,26 +31,6 @@ vertex_color_use_as_albedo = true
 material = SubResource( 15 )
 size = Vector2( 2, 2 )
 
-[sub_resource type="SpatialMaterial" id=36]
-flags_transparent = true
-vertex_color_use_as_albedo = true
-
-[sub_resource type="Gradient" id=34]
-offsets = PoolRealArray( 0, 0.35, 0.5, 0.75, 1 )
-colors = PoolColorArray( 0, 0, 0, 1, 0, 0, 0, 1, 0.0980392, 0.0980392, 0.0980392, 1, 0.196078, 0.196078, 0.196078, 1, 1, 1, 1, 0 )
-
-[sub_resource type="GradientTexture" id=35]
-gradient = SubResource( 34 )
-
-[sub_resource type="ParticlesMaterial" id=32]
-gravity = Vector3( 0, 1, 0 )
-scale = 0.1
-color_ramp = SubResource( 35 )
-
-[sub_resource type="SphereMesh" id=33]
-radius = 0.5
-height = 1.0
-
 [sub_resource type="AnimationNodeTimeScale" id=30]
 
 [sub_resource type="AnimationNodeAnimation" id=22]
@@ -72,7 +52,7 @@ nodes/reload_animation/node = SubResource( 19 )
 nodes/reload_animation/position = Vector2( -200, 180 )
 nodes/reload_one_shot/node = SubResource( 20 )
 nodes/reload_one_shot/position = Vector2( 380, 100 )
-node_connections = [ "output", 0, "reload_one_shot", "reload_one_shot", 0, "idle_animation", "reload_one_shot", 1, "TimeScale", "TimeScale", 0, "reload_animation" ]
+node_connections = [ "output", 0, "reload_one_shot", "TimeScale", 0, "reload_animation", "reload_one_shot", 0, "idle_animation", "reload_one_shot", 1, "TimeScale" ]
 
 [node name="Gun1" instance=ExtResource( 1 )]
 transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 2 )
@@ -92,16 +72,6 @@ one_shot = true
 visibility_aabb = AABB( -7.5, -7.5, -7.5, 15, 15, 15 )
 process_material = SubResource( 25 )
 draw_pass_1 = SubResource( 26 )
-
-[node name="SmokeTrail" type="Particles" parent="Muzzle" index="1"]
-material_override = SubResource( 36 )
-emitting = false
-amount = 50
-lifetime = 1.5
-one_shot = true
-local_coords = false
-process_material = SubResource( 32 )
-draw_pass_1 = SubResource( 33 )
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="4"]
 tree_root = SubResource( 29 )
