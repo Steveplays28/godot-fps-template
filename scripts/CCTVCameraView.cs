@@ -21,7 +21,6 @@ public class CCTVCameraView : Sprite3D
 			Texture texture = cctvCameraViewport.GetTexture();
 			texture.Flags = (uint)Texture.FlagsEnum.Filter;
 			Texture = texture;
-			GD.Print("e");
 		}
 	}
 }
