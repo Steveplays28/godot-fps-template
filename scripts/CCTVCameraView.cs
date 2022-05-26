@@ -4,23 +4,24 @@ using Godot;
 public class CCTVCameraView : Sprite3D
 {
 	[Export] public readonly NodePath CCTVCameraNodePath;
-	private Node CCTVCamera;
-	private Viewport CCTVCameraViewport;
+	private Node cctvCamera;
+	private Viewport cctvCameraViewport;
 
 	public override void _Ready()
 	{
 		base._Ready();
 
-		CCTVCamera = GetNodeOrNull(CCTVCameraNodePath);
-		if (CCTVCamera != null)
+		cctvCamera = GetNodeOrNull(CCTVCameraNodePath);
+		if (cctvCamera != null)
 		{
-			CCTVCameraViewport = CCTVCamera.GetNodeOrNull<Viewport>("Viewport");
+			cctvCameraViewport = cctvCamera.GetNodeOrNull<Viewport>("Viewport");
 		}
-		if (CCTVCameraViewport != null)
+		if (cctvCameraViewport != null)
 		{
-			Texture texture = CCTVCameraViewport.GetTexture();
+			Texture texture = cctvCameraViewport.GetTexture();
 			texture.Flags = (uint)Texture.FlagsEnum.Filter;
 			Texture = texture;
+			GD.Print("e");
 		}
 	}
 }

@@ -109,4 +109,4 @@ script = ExtResource( 8 )
 CCTVCameraNodePath = NodePath("../CCTVCamera1")
 
 [node name="CCTVCamera1" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 15, 30 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 15, 20 )

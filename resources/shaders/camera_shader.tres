@@ -1,0 +1,12 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type canvas_item;
+
+void fragment() {
+    vec4 current_color = texture(TEXTURE, UV); // Get current color of pixel
+
+    if (current_color == vec4(0.3,0.3,0.3,1)) {
+        COLOR = vec4(0,0,1,1);
+    }
+}"
