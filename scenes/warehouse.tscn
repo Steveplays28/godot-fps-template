@@ -1,13 +1,9 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://prefabs/brick_wall1.tscn" type="PackedScene" id=1]
 [ext_resource path="res://main_environment.tres" type="Environment" id=2]
 [ext_resource path="res://prefabs/steel_beam1.tscn" type="PackedScene" id=3]
-[ext_resource path="res://resources/materials/purple.tres" type="Material" id=4]
-
-[sub_resource type="BoxShape" id=12]
-
-[sub_resource type="CubeMesh" id=13]
+[ext_resource path="res://prefabs/level_prototyping/prototype_cube.tscn" type="PackedScene" id=4]
 
 [node name="Warehouse" type="Spatial"]
 
@@ -18,52 +14,20 @@ environment = ExtResource( 2 )
 transform = Transform( 1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0 )
 shadow_enabled = true
 
-[node name="Floor" type="StaticBody" parent="."]
+[node name="PrototypeCube1" parent="." instance=ExtResource( 4 )]
 transform = Transform( 50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Floor"]
-shape = SubResource( 12 )
-
-[node name="MeshInstance" type="MeshInstance" parent="Floor/CollisionShape"]
-mesh = SubResource( 13 )
-skeleton = NodePath("../..")
-material/0 = ExtResource( 4 )
-
-[node name="Floor2" type="StaticBody" parent="."]
+[node name="PrototypeCube2" parent="." instance=ExtResource( 4 )]
 transform = Transform( 25, 0, 0, 0, 1, 0, 0, 0, 25, 25, 0, -75 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Floor2"]
-shape = SubResource( 12 )
+[node name="PrototypeCube3" parent="." instance=ExtResource( 4 )]
+transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 15, 39.5, 7, -25 )
 
-[node name="MeshInstance" type="MeshInstance" parent="Floor2/CollisionShape"]
-mesh = SubResource( 13 )
-skeleton = NodePath("../../../Floor2")
-material/0 = ExtResource( 4 )
-
-[node name="Floor3" type="StaticBody" parent="."]
-transform = Transform( 10, 0, 0, 0, 0.5, 0, 0, 0, 15, 40, 7, -85 )
-
-[node name="CollisionShape" type="CollisionShape" parent="Floor3"]
-shape = SubResource( 12 )
-
-[node name="MeshInstance" type="MeshInstance" parent="Floor3/CollisionShape"]
-mesh = SubResource( 13 )
-skeleton = NodePath("../../../Floor2")
-material/0 = ExtResource( 4 )
-
-[node name="Floor4" type="StaticBody" parent="."]
-transform = Transform( 15, 0, 0, 0, 0.5, 0, 0, 0, 2, 15, 7, -77.5 )
-
-[node name="CollisionShape" type="CollisionShape" parent="Floor4"]
-shape = SubResource( 12 )
-
-[node name="MeshInstance" type="MeshInstance" parent="Floor4/CollisionShape"]
-mesh = SubResource( 13 )
-skeleton = NodePath("../../../Floor2")
-material/0 = ExtResource( 4 )
+[node name="PrototypeCube4" parent="." instance=ExtResource( 4 )]
+transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 2, 19.5, 7, -25 )
 
 [node name="SteelBeam1" parent="." instance=ExtResource( 3 )]
-transform = Transform( 0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 20.5502, 1.00003, -75.0231 )
+transform = Transform( 0.5, 0, 0, 0, 0.55, 0, 0, 0, 0.5, 20.5502, 1.00003, -23.8421 )
 
 [node name="BrickWall1" parent="." instance=ExtResource( 1 )]
 transform = Transform( -3.27835e-07, 0, -0.5, 0, 0.5, 0, 7.5, 0, -2.18557e-08, 49.5, 1, -25 )
@@ -87,4 +51,4 @@ transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 25, 1, -100 )
 transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -25, 1, 15 )
 
 [node name="BrickWall8" parent="." instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 10, 1, -75 )
+transform = Transform( 1, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 25, 1, -65 )
