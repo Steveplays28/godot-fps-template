@@ -28,6 +28,10 @@ settings/fps/force_fps=120
 
 window/vsync/vsync_via_compositor=true
 
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/change_node/plugin.cfg" )
+
 [input]
 
 escape={
