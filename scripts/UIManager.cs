@@ -12,6 +12,8 @@ public class UIManager : Control
 	public Label DebugLabel;
 	public TextureRect Crosshair;
 
+	private string currentSceneRootNodePath;
+
 	public override void _Ready()
 	{
 		base._Ready();
@@ -20,6 +22,8 @@ public class UIManager : Control
 		DebugUI = GetNode<Control>("Debug");
 		DebugLabel = DebugUI.GetNode<Label>("DebugLabel");
 		Crosshair = NonDebugUI.GetNode<TextureRect>("Crosshair");
+
+		currentSceneRootNodePath = GetTree().CurrentScene.GetPath().ToString();
 
 		if (IsNonDebugUIVisible)
 		{
@@ -46,7 +50,7 @@ public class UIManager : Control
 
 		if (IsDebugUIVisible)
 		{
-			RigidBody player = GetNode<RigidBody>("/root/Spatial/Player");
+			RigidBody player = GetNode<RigidBody>($"{currentSceneRootNodePath}/Player");
 			DebugLabel.Text = $"FPS: {1 / delta}\n\nGlobal position: {player.GlobalTransform.origin}\nGlobal linear velocity: {player.LinearVelocity}\n\nLocal linear velocity: {player.Call(nameof(PlayerController.LinearVelocityLocal))}";
 		}
 
