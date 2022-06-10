@@ -4,14 +4,14 @@ using SteveUtility;
 
 public class Weapon : Spatial
 {
-	[Export] public string PlayerNodePath = "/root/Spatial/Player";
-	[Export] public string CameraNodePath = "/root/Spatial/Player/CollisionShape/Camera";
+	[Export] public NodePath PlayerNodePath;
+	[Export] public NodePath CameraNodePath = "/root/Spatial/Player/CollisionShape/Camera";
 	[Export] public string UIManagerNodePath = "/root/UI";
-	[Export] public string HorizontalRotationNodePath = "/root/Spatial/Player/CollisionShape";
-	[Export] public string RayCastNodePath = "Muzzle";
-	[Export] public string MuzzleFlashNodePath = "Muzzle/MuzzleFlash";
-	[Export] public string SmokeTrailNodePath = "Muzzle/SmokeTrail";
-	[Export] public string AnimationTreeNodePath = "AnimationTree";
+	[Export] public NodePath HorizontalRotationNodePath = "/root/Spatial/Player/CollisionShape";
+	[Export] public NodePath RayCastNodePath = "Muzzle";
+	[Export] public NodePath MuzzleFlashNodePath = "Muzzle/MuzzleFlash";
+	[Export] public NodePath SmokeTrailNodePath = "Muzzle/SmokeTrail";
+	[Export] public NodePath AnimationTreeNodePath = "AnimationTree";
 	[Export] public Vector3 AimDownSightPosition;
 	[Export] public float AimDownSightSpeed = 0.25f;
 	[Export] public int ShotsPerSecond = 10;
@@ -52,7 +52,7 @@ public class Weapon : Spatial
 		horizontalRotationNode = GetNode<Spatial>(HorizontalRotationNodePath);
 		rayCast = GetNode<RayCast>(RayCastNodePath);
 		muzzleFlash = GetNode<Particles>(MuzzleFlashNodePath);
-		smokeTrail = GetNode<Particles>(SmokeTrailNodePath);
+		smokeTrail = GetNodeOrNull<Particles>(SmokeTrailNodePath);
 		animationTree = GetNode<AnimationTree>(AnimationTreeNodePath);
 		muzzlePosition = rayCast.GlobalTransform.origin;
 		initialPosition = Translation;
@@ -79,7 +79,7 @@ public class Weapon : Spatial
 
 		if (Input.IsActionJustReleased("shoot"))
 		{
-			smokeTrail.Restart();
+			SmokeTrail();
 		}
 
 		if (Input.IsActionJustPressed("reload"))
@@ -246,5 +246,13 @@ public class Weapon : Spatial
 
 		tween.Start();
 		tween.DeleteOnAllCompleted();
+	}
+
+	public void SmokeTrail()
+	{
+		if (smokeTrail != null)
+		{
+			smokeTrail.Restart();
+		}
 	}
 }

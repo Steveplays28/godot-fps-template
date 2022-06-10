@@ -209,8 +209,6 @@ public class PlayerController : RigidBody
 			cameraRotationClamped.x = Mathf.Clamp(cameraRotationClamped.x, -MaxRotationXDegrees, MaxRotationXDegrees);
 			camera.RotationDegrees = cameraRotationClamped;
 		}
-
-		base._Input(inputEvent);
 	}
 
 #pragma warning disable

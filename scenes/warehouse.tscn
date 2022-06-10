@@ -1,0 +1,85 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://prefabs/brick_wall1.tscn" type="PackedScene" id=1]
+[ext_resource path="res://main_environment.tres" type="Environment" id=2]
+[ext_resource path="res://prefabs/steel_beam1.tscn" type="PackedScene" id=3]
+[ext_resource path="res://prefabs/level_prototyping/prototype_cube.tscn" type="PackedScene" id=4]
+[ext_resource path="res://prefabs/glass_wall1.tscn" type="PackedScene" id=5]
+[ext_resource path="res://prefabs/player.tscn" type="PackedScene" id=6]
+
+[node name="Warehouse" type="Spatial"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource( 2 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0 )
+shadow_enabled = true
+
+[node name="Player" parent="." instance=ExtResource( 6 )]
+
+[node name="PrototypeCube1" parent="." instance=ExtResource( 4 )]
+transform = Transform( 50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0 )
+
+[node name="PrototypeCube2" parent="." instance=ExtResource( 4 )]
+transform = Transform( 25, 0, 0, 0, 1, 0, 0, 0, 25, 25, 0, -75 )
+
+[node name="PrototypeCube3" parent="." instance=ExtResource( 4 )]
+transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 15, 39.5, 7, -25 )
+
+[node name="PrototypeCube7" parent="." instance=ExtResource( 4 )]
+transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 9, -5.5, 7, -26 )
+
+[node name="PrototypeCube4" parent="." instance=ExtResource( 4 )]
+transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 15, -39.5, 7, -0.5 )
+
+[node name="PrototypeCube5" parent="." instance=ExtResource( 4 )]
+transform = Transform( 33, 0, 0, 0, 1, 0, 0, 0, 2, -4, 7, -28 )
+
+[node name="PrototypeCube6" parent="." instance=ExtResource( 4 )]
+transform = Transform( -8.55334e-07, 0, -2, 0, 1, 0, 5.25, 0, -3.25841e-07, -35, 7, -20.75 )
+
+[node name="Stairs" parent="." instance=ExtResource( 4 )]
+transform = Transform( -8.55334e-07, 0, -2, -3.71231, 0.707107, 2.30404e-07, 3.71231, 0.707107, -2.30404e-07, -48, 4, 17.25 )
+
+[node name="Stairs2" parent="." instance=ExtResource( 4 )]
+transform = Transform( 5.30793e-07, -6.18172e-08, 2, -3.71231, 0.707107, 2.30404e-07, -3.71231, -0.707107, 5.55588e-08, 47, 4, -43.75 )
+
+[node name="Stairs3" parent="." instance=ExtResource( 4 )]
+transform = Transform( -8.55334e-07, 0, -2, -3.71231, 0.707107, 2.30404e-07, 3.71231, 0.707107, -2.30404e-07, -5, 4, -13.75 )
+
+[node name="Stairs4" parent="." instance=ExtResource( 4 )]
+transform = Transform( 5.30793e-07, -6.18172e-08, 2, -3.71231, 0.707107, 2.30404e-07, -3.71231, -0.707107, 5.55588e-08, -5, 4, -38.75 )
+
+[node name="SteelBeam1" parent="." instance=ExtResource( 3 )]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 7.5, 1, -28 )
+
+[node name="BrickWall1" parent="." instance=ExtResource( 1 )]
+transform = Transform( -3.27835e-07, 0, -0.5, 0, 0.5, 0, 7.5, 0, -2.18557e-08, 49.5, 1, -25 )
+
+[node name="BrickWall2" parent="." instance=ExtResource( 1 )]
+transform = Transform( 5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 50 )
+
+[node name="BrickWall3" parent="." instance=ExtResource( 1 )]
+transform = Transform( -2.18557e-07, 0, -0.5, 0, 0.5, 0, 5, 0, -2.18557e-08, -50, 1, 0 )
+
+[node name="BrickWall4" parent="." instance=ExtResource( 1 )]
+transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -25, 1, -50 )
+
+[node name="BrickWall5" parent="." instance=ExtResource( 1 )]
+transform = Transform( -2.68211e-07, 0, -0.5, 0, 0.5, 0, 2.5, 0, -5.36422e-08, 0, 1, -75 )
+
+[node name="BrickWall6" parent="." instance=ExtResource( 1 )]
+transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 25, 1, -100 )
+
+[node name="BrickWall7" parent="." instance=ExtResource( 1 )]
+transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -18, 1, 15 )
+
+[node name="BrickWall8" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 25, 1, -65 )
+
+[node name="GlassWall1" parent="." instance=ExtResource( 5 )]
+transform = Transform( 1.144, 0, 0, 0, 0.2, 0, 0, 0, 0.5, 16, 6, -25 )
+
+[node name="GlassWall2" parent="." instance=ExtResource( 5 )]
+transform = Transform( 0.82368, 0, 0, 0, 0.2, 0, 0, 0, 0.5, -24, 6, -25 )
