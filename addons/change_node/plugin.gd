@@ -35,12 +35,12 @@ func file_dialog_file_selected(path:String):
 
 func do_change_nodes():
 	var selected_nodes = get_editor_interface().get_selection().get_selected_nodes()
-
-	var new_node_path:String = changed_node_paths[changed_node_paths.size() - 1]
-	var loaded_node = load(new_node_path)
-	var instanced_node = loaded_node.instance()
 	
 	for selected_node in selected_nodes:
+		var new_node_path:String = changed_node_paths[changed_node_paths.size() - 1]
+		var loaded_node = load(new_node_path)
+		var instanced_node = loaded_node.instance()
+
 		if (selected_node is Spatial && instanced_node is Spatial):
 			var selected_spatial:Spatial = selected_node as Spatial
 			

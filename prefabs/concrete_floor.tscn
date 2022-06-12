@@ -13,5 +13,4 @@ shape = SubResource( 12 )
 
 [node name="MeshInstance" type="MeshInstance" parent="CollisionShape"]
 mesh = SubResource( 13 )
-skeleton = NodePath("../../../Floor2")
 material/0 = ExtResource( 1 )
