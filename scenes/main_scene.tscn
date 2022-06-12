@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cautcwkislu24"]
+[gd_scene load_steps=15 format=3 uid="uid://cautcwkislu24"]
 
 [ext_resource type="Script" path="res://scripts/PlayerController.cs" id="1"]
 [ext_resource type="PhysicsMaterial" path="res://resources/materials/physics/zero_friction.tres" id="2"]
@@ -24,6 +24,9 @@ _data = [Vector2(0, 5.99091), 0.0, 0.0, 0, 0, Vector2(0.0905923, 5.82727), -30.3
 size = Vector3(2, 4, 2)
 
 [sub_resource type="BoxMesh" id="3"]
+
+[sub_resource type="FogMaterial" id="FogMaterial_55d8x"]
+density = 0.05
 
 [node name="Spatial" type="Node3D"]
 
@@ -120,3 +123,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115672, 0)
 target_position = Vector3(5, 0, 0)
 
 [node name="Melee" parent="Player" instance=ExtResource( "6_nekng" )]
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 6.16874, 7.21658)
+light_energy = 100.0
+spot_range = 10.0
+
+[node name="FogVolume" type="FogVolume" parent="SpotLight3D"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+extents = Vector3(10, 10, 10)
+material = SubResource( "FogMaterial_55d8x" )
