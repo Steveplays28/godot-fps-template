@@ -30,7 +30,7 @@ window/vsync/vsync_via_compositor=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/SIsilicon.vfx.godrays/plugin.cfg", "res://addons/change_node/plugin.cfg", "res://addons/godrays/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/change_node/plugin.cfg" )
 
 [input]
 
