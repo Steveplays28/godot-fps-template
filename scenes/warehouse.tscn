@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://prefabs/brick_wall1.tscn" type="PackedScene" id=1]
 [ext_resource path="res://main_environment.tres" type="Environment" id=2]
@@ -6,13 +6,8 @@
 [ext_resource path="res://prefabs/level_prototyping/prototype_cube.tscn" type="PackedScene" id=4]
 [ext_resource path="res://prefabs/glass_wall1.tscn" type="PackedScene" id=5]
 [ext_resource path="res://prefabs/player.tscn" type="PackedScene" id=6]
-[ext_resource path="res://prefabs/godray.tscn" type="PackedScene" id=7]
 [ext_resource path="res://prefabs/concrete_floor.tscn" type="PackedScene" id=8]
 [ext_resource path="res://prefabs/window1.tscn" type="PackedScene" id=9]
-
-[sub_resource type="SpatialMaterial" id=1]
-flags_transparent = true
-albedo_color = Color( 1, 1, 1, 0.196078 )
 
 [node name="Warehouse" type="Spatial"]
 
@@ -111,11 +106,3 @@ transform = Transform( 1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 23.8938
 
 [node name="Window4" parent="." instance=ExtResource( 9 )]
 transform = Transform( 1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 27.312, 9, -100 )
-
-[node name="GodRay" parent="." instance=ExtResource( 7 )]
-transform = Transform( -1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 17, 9, -100 )
-
-[node name="MeshInstance" parent="GodRay" index="0"]
-material/0 = SubResource( 1 )
-
-[editable path="GodRay"]
