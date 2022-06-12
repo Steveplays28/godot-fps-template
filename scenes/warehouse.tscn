@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://prefabs/brick_wall1.tscn" type="PackedScene" id=1]
 [ext_resource path="res://main_environment.tres" type="Environment" id=2]
@@ -6,8 +6,13 @@
 [ext_resource path="res://prefabs/level_prototyping/prototype_cube.tscn" type="PackedScene" id=4]
 [ext_resource path="res://prefabs/glass_wall1.tscn" type="PackedScene" id=5]
 [ext_resource path="res://prefabs/player.tscn" type="PackedScene" id=6]
-[ext_resource path="res://addons/SIsilicon.vfx.godrays/GodRays.gd" type="Script" id=7]
+[ext_resource path="res://prefabs/godray.tscn" type="PackedScene" id=7]
 [ext_resource path="res://prefabs/concrete_floor.tscn" type="PackedScene" id=8]
+[ext_resource path="res://prefabs/window1.tscn" type="PackedScene" id=9]
+
+[sub_resource type="SpatialMaterial" id=1]
+flags_transparent = true
+albedo_color = Color( 1, 1, 1, 0.196078 )
 
 [node name="Warehouse" type="Spatial"]
 
@@ -15,12 +20,8 @@
 environment = ExtResource( 2 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -0.965926, 0.258819, 0, -0.258819, -0.965926, 0, 0, 0 )
 shadow_enabled = true
-
-[node name="GodRays" type="Spatial" parent="DirectionalLight"]
-script = ExtResource( 7 )
-exposure = 0.25
 
 [node name="Player" parent="." instance=ExtResource( 6 )]
 
@@ -73,10 +74,19 @@ transform = Transform( -2.18557e-07, 0, -0.5, 0, 0.5, 0, 5, 0, -2.18557e-08, -50
 transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -25, 1, -50 )
 
 [node name="BrickWall5" parent="." instance=ExtResource( 1 )]
-transform = Transform( -2.68211e-07, 0, -0.5, 0, 0.5, 0, 2.5, 0, -5.36422e-08, 0, 1, -75 )
+transform = Transform( -2.68211e-07, 0, -0.5, 0, 0.75, 0, 2.5, 0, -5.36422e-08, 0, 1, -75 )
 
 [node name="BrickWall6" parent="." instance=ExtResource( 1 )]
-transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 25, 1, -100 )
+transform = Transform( 0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.5, 8, 1, -100 )
+
+[node name="BrickWall9" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 0.75, 0, 0, 0, 0.5, 39, 1, -100 )
+
+[node name="BrickWall10" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.72, 0, 0, 0, 0.3, 0, 0, 0, 0.5, 22, 1, -100 )
+
+[node name="BrickWall11" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.72, 0, 0, 0, 0.27, 0, 0, 0, 0.5, 22, 10.5484, -100 )
 
 [node name="BrickWall7" parent="." instance=ExtResource( 1 )]
 transform = Transform( 2.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -18, 1, 15 )
@@ -89,3 +99,23 @@ transform = Transform( 1.144, 0, 0, 0, 0.2, 0, 0, 0, 0.5, 16, 6, -25 )
 
 [node name="GlassWall2" parent="." instance=ExtResource( 5 )]
 transform = Transform( 0.82368, 0, 0, 0, 0.2, 0, 0, 0, 0.5, -24, 6, -25 )
+
+[node name="Window1" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 17.1017, 9, -100 )
+
+[node name="Window2" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 20.4921, 9, -100 )
+
+[node name="Window3" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 23.8938, 9, -100 )
+
+[node name="Window4" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 27.312, 9, -100 )
+
+[node name="GodRay" parent="." instance=ExtResource( 7 )]
+transform = Transform( -1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 17, 9, -100 )
+
+[node name="MeshInstance" parent="GodRay" index="0"]
+material/0 = SubResource( 1 )
+
+[editable path="GodRay"]
