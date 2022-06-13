@@ -1,19 +1,22 @@
-[gd_resource type="Environment" load_steps=3 format=3 uid="uid://dwvyt6a6uebxe"]
+[gd_resource type="Environment" load_steps=4 format=3 uid="uid://dwvyt6a6uebxe"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_2chh3"]
-sky_top_color = Color(0.384314, 0.454902, 0.54902, 1)
-ground_bottom_color = Color(0.384314, 0.454902, 0.54902, 1)
+[ext_resource type="Texture2D" uid="uid://b8dsdst4f1pmy" path="res://evening_meadow_4k.hdr" id="1_6nvyw"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_xsn3y"]
+panorama = ExtResource( "1_6nvyw" )
 
 [sub_resource type="Sky" id="1"]
-sky_material = SubResource( "ProceduralSkyMaterial_2chh3" )
+sky_material = SubResource( "PanoramaSkyMaterial_xsn3y" )
 
 [resource]
 background_mode = 2
 sky = SubResource( "1" )
-ambient_light_color = Color(1, 1, 1, 1)
-tonemap_mode = 3
-ssao_enabled = true
+ambient_light_sky_contribution = 0.25
+ambient_light_energy = 0.0
+ssil_enabled = true
 glow_enabled = true
+glow_normalized = true
 glow_bloom = 0.25
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.0
+volumetric_fog_ambient_inject = 0.5
