@@ -3,15 +3,17 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b8dsdst4f1pmy"
-path="res://.godot/imported/evening_meadow_4k.hdr-33acd70e58ae380c44f0a231a78cbf73.ctex"
+path.s3tc="res://.godot/imported/evening_meadow_4k.hdr-33acd70e58ae380c44f0a231a78cbf73.s3tc.ctex"
+path.etc2="res://.godot/imported/evening_meadow_4k.hdr-33acd70e58ae380c44f0a231a78cbf73.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc", "etc2"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://evening_meadow_4k.hdr"
-dest_files=["res://.godot/imported/evening_meadow_4k.hdr-33acd70e58ae380c44f0a231a78cbf73.ctex"]
+dest_files=["res://.godot/imported/evening_meadow_4k.hdr-33acd70e58ae380c44f0a231a78cbf73.s3tc.ctex", "res://.godot/imported/evening_meadow_4k.hdr-33acd70e58ae380c44f0a231a78cbf73.etc2.ctex"]
 
 [params]
 

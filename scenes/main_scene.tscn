@@ -38,9 +38,10 @@ transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0
 light_energy = 0.5
 light_indirect_energy = 0.5
 shadow_enabled = true
+sky_mode = 1
 
 [node name="FogVolume" type="FogVolume" parent="."]
-extents = Vector3(100, 100, 100)
+extents = Vector3(200, 200, 200)
 material = SubResource( "FogMaterial_55d8x" )
 
 [node name="Ground" type="StaticBody3D" parent="."]
@@ -56,13 +57,52 @@ skeleton = NodePath("../../..")
 surface_material_override/0 = ExtResource( "2_k36jp" )
 
 [node name="Wall1" type="StaticBody3D" parent="."]
-transform = Transform3D(9.55343e-16, 4.37114e-08, -1, 0.5, -4.37114e-08, 0, -2.18557e-08, -1, -4.37114e-08, 0, 5, -15)
+transform = Transform3D(5.96046e-07, 0, -5, 10, 5.96046e-08, 0, 0, -1, 2.98023e-07, 45.0875, 5, -15)
 
 [node name="CollisionShape" type="CollisionShape3D" parent="Wall1"]
 transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
 shape = SubResource( "4" )
 
 [node name="MeshInstance" type="MeshInstance3D" parent="Wall1/CollisionShape"]
+gi_mode = 1
+mesh = SubResource( "1" )
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource( "2_k36jp" )
+
+[node name="Wall2" type="StaticBody3D" parent="."]
+transform = Transform3D(5.96046e-07, 0, -5, 10, 5.96046e-08, 0, 0, -1, 2.98023e-07, -89.0347, 5, -15)
+
+[node name="CollisionShape" type="CollisionShape3D" parent="Wall2"]
+transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
+shape = SubResource( "4" )
+
+[node name="MeshInstance" type="MeshInstance3D" parent="Wall2/CollisionShape"]
+gi_mode = 1
+mesh = SubResource( "1" )
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource( "2_k36jp" )
+
+[node name="Wall3" type="StaticBody3D" parent="."]
+transform = Transform3D(5.96046e-07, 0, -0.5, 5, 0, 5.96046e-08, 0, -1, 0, -21.7772, 68.2446, -15)
+
+[node name="CollisionShape" type="CollisionShape3D" parent="Wall3"]
+transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
+shape = SubResource( "4" )
+
+[node name="MeshInstance" type="MeshInstance3D" parent="Wall3/CollisionShape"]
+gi_mode = 1
+mesh = SubResource( "1" )
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource( "2_k36jp" )
+
+[node name="Wall4" type="StaticBody3D" parent="."]
+transform = Transform3D(5.96046e-07, 0, -0.5, 5, 0, 5.96046e-08, 0, -1, 0, -21.7772, -71.0933, -15)
+
+[node name="CollisionShape" type="CollisionShape3D" parent="Wall4"]
+transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
+shape = SubResource( "4" )
+
+[node name="MeshInstance" type="MeshInstance3D" parent="Wall4/CollisionShape"]
 gi_mode = 1
 mesh = SubResource( "1" )
 skeleton = NodePath("../..")
