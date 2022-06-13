@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cautcwkislu24"]
+[gd_scene load_steps=14 format=3 uid="uid://cautcwkislu24"]
 
 [ext_resource type="Script" path="res://scripts/PlayerController.cs" id="1"]
 [ext_resource type="PhysicsMaterial" path="res://resources/materials/physics/zero_friction.tres" id="2"]
@@ -6,10 +6,6 @@
 [ext_resource type="Environment" uid="uid://dwvyt6a6uebxe" path="res://main_environment.tres" id="3"]
 [ext_resource type="PackedScene" uid="uid://sd6t4lxw40wh" path="res://prefabs/melee.tscn" id="6_nekng"]
 [ext_resource type="PackedScene" uid="uid://c6h1i6m47tbve" path="res://prefabs/gun1.tscn" id="7"]
-
-[sub_resource type="FogMaterial" id="FogMaterial_55d8x"]
-density = 0.1525
-edge_fade = 0.53033
 
 [sub_resource type="BoxShape3D" id="4"]
 
@@ -35,16 +31,10 @@ size = Vector3(2, 4, 2)
 environment = ExtResource( "3" )
 
 [node name="DirectionalLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 0, 0, 0)
-light_energy = 0.5
-light_indirect_energy = 0.5
+transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 2.87931, 19.5693, -30.5299)
+light_energy = 100.0
 shadow_enabled = true
 sky_mode = 1
-
-[node name="FogVolume" type="FogVolume" parent="."]
-visible = false
-extents = Vector3(200, 200, 200)
-material = SubResource( "FogMaterial_55d8x" )
 
 [node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0)
@@ -72,6 +62,59 @@ mesh = SubResource( "1" )
 skeleton = NodePath("../..")
 surface_material_override/0 = ExtResource( "2_k36jp" )
 
+[node name="Wall5" type="StaticBody3D" parent="."]
+transform = Transform3D(9.47314e-15, -1, 5.1658e-07, 10, 5.96046e-08, -1.05879e-21, -5.96046e-07, 4.37114e-08, 5, 8.60582, 5, -74.4279)
+
+[node name="CollisionShape" type="CollisionShape3D" parent="Wall5"]
+transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
+shape = SubResource( "4" )
+
+[node name="MeshInstance" type="MeshInstance3D" parent="Wall5/CollisionShape"]
+gi_mode = 1
+mesh = SubResource( "1" )
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource( "2_k36jp" )
+
+[node name="Wall6" type="StaticBody3D" parent="."]
+transform = Transform3D(-5.96046e-07, 8.74228e-08, 5, 10, 5.96046e-08, -4.23516e-21, 1.65809e-14, 1, -7.35137e-07, -43.3221, 5, -121.038)
+
+[node name="CollisionShape" type="CollisionShape3D" parent="Wall6"]
+transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
+shape = SubResource( "4" )
+
+[node name="MeshInstance" type="MeshInstance3D" parent="Wall6/CollisionShape"]
+gi_mode = 1
+mesh = SubResource( "1" )
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource( "2_k36jp" )
+
+[node name="Wall7" type="StaticBody3D" parent="."]
+transform = Transform3D(4.26349e-14, 1, -9.53694e-07, 10, 5.96046e-08, -4.23516e-21, 5.96046e-07, -1.31134e-07, -5, -103.216, 5, -72.9928)
+
+[node name="CollisionShape" type="CollisionShape3D" parent="Wall7"]
+transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
+shape = SubResource( "4" )
+
+[node name="MeshInstance" type="MeshInstance3D" parent="Wall7/CollisionShape"]
+transform = Transform3D(1, -5.96341e-24, 1.27055e-21, -4.33681e-19, 1, 0, -2.13163e-14, 0, 1, 0, 0, 0)
+gi_mode = 1
+mesh = SubResource( "1" )
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource( "2_k36jp" )
+
+[node name="Wall8" type="StaticBody3D" parent="."]
+transform = Transform3D(10, 1.58932e-08, 1.12742e-13, -4.37114e-07, -1, 9.53694e-07, 5.96046e-07, -1.31134e-07, -5, -89.158, 90.3544, -78.5734)
+
+[node name="CollisionShape" type="CollisionShape3D" parent="Wall8"]
+transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
+shape = SubResource( "4" )
+
+[node name="MeshInstance" type="MeshInstance3D" parent="Wall8/CollisionShape"]
+gi_mode = 1
+mesh = SubResource( "1" )
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource( "2_k36jp" )
+
 [node name="Wall2" type="StaticBody3D" parent="."]
 transform = Transform3D(5.96046e-07, 0, -5, 10, 5.96046e-08, 0, 0, -1, 2.98023e-07, -89.0347, 5, -15)
 
@@ -80,13 +123,14 @@ transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
 shape = SubResource( "4" )
 
 [node name="MeshInstance" type="MeshInstance3D" parent="Wall2/CollisionShape"]
+transform = Transform3D(1, 0, 2.11758e-22, 1.0842e-19, 1, -4.54747e-13, -1.42109e-14, 0, 1, 0, 0, 0)
 gi_mode = 1
 mesh = SubResource( "1" )
 skeleton = NodePath("../..")
 surface_material_override/0 = ExtResource( "2_k36jp" )
 
 [node name="Wall3" type="StaticBody3D" parent="."]
-transform = Transform3D(5.96046e-07, 0, -0.5, 5, 0, 5.96046e-08, 0, -1, 0, -21.7772, 68.2446, -15)
+transform = Transform3D(5.96046e-07, 0, -0.5, 5, 0, 5.96046e-08, 0, -1, 0, -21.7772, 117.321, -15)
 
 [node name="CollisionShape" type="CollisionShape3D" parent="Wall3"]
 transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
@@ -100,7 +144,7 @@ skeleton = NodePath("../..")
 surface_material_override/0 = ExtResource( "2_k36jp" )
 
 [node name="Wall4" type="StaticBody3D" parent="."]
-transform = Transform3D(5.96046e-07, 0, -0.5, 5, 0, 5.96046e-08, 0, -1, 0, -21.7772, -71.0933, -15)
+transform = Transform3D(5.96046e-07, 0, -0.5, 5, 0, 5.96046e-08, 0, -1, 0, -21.7772, -11.3349, -15)
 
 [node name="CollisionShape" type="CollisionShape3D" parent="Wall4"]
 transform = Transform3D(25, 0, 0, 0, 1, 0, 0, 0, 25, 0, 0, 0)
@@ -176,23 +220,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.115672, 0)
 target_position = Vector3(5, 0, 0)
 
 [node name="Melee" parent="Player" instance=ExtResource( "6_nekng" )]
-
-[node name="SpotLight3D" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 55.8166, 6.16874, 32.5454)
-light_energy = 100.0
-spot_range = 25.0
-
-[node name="FogVolume" type="FogVolume" parent="SpotLight3D"]
-transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 5, -5)
-extents = Vector3(5, 5, 10)
-material = SubResource( "FogMaterial_55d8x" )
-
-[node name="SpotLight3D3" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -22.6291, 13.1018, -9.84819)
-light_energy = 50.0
-spot_range = 100.0
-
-[node name="FogVolume" type="FogVolume" parent="SpotLight3D3"]
-transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
-extents = Vector3(25, 25, 25)
-material = SubResource( "FogMaterial_55d8x" )
