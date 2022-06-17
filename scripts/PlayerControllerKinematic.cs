@@ -6,13 +6,14 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export] public float Mass = 80f;
 	[Export] public Vector3 Gravity = new Vector3(0, -9.81f, 0);
 	[Export] public float GravityScale = 1f;
-	[Export] public float Acceleration = 1f;
-	[Export(PropertyHint.Range, "0, 1")] public float Decceleration = 0.75f;
+	[Export(PropertyHint.Range, "0, 100")] public float Acceleration = 10f;
+	[Export(PropertyHint.Range, "0, 100")] public float AirAcceleration = 5f;
+	[Export(PropertyHint.Range, "0, 100")] public float Decceleration = 10f;
+	[Export(PropertyHint.Range, "0, 100")] public float AirDecceleration = 5f;
 	[Export] public Vector2 Sensitivity = new Vector2(1f, 1f);
 	[Export] public float MaxVerticalRotation = 90f;
 	[Export] public float JumpLength = 0.25f;
 	[Export] public float JumpSpeed = 100f;
-	[Export(PropertyHint.Range, "0, 1")] public float AirMovementSpeedMultiplier = 0.5f;
 	[Export] private readonly NodePath FloorRayCastNodePath;
 	[Export] private readonly NodePath CameraNodePath;
 
@@ -39,7 +40,7 @@ public class PlayerControllerKinematic : KinematicBody
 		HandleRestartInput();
 
 		HandleGravity(delta);
-		HandleMovementInput();
+		HandleMovementInput(delta);
 		HandleJumpInput(delta);
 		ApplyVelocity(delta);
 	}
@@ -98,7 +99,7 @@ public class PlayerControllerKinematic : KinematicBody
 		}
 	}
 
-	private void HandleMovementInput()
+	private void HandleMovementInput(float delta)
 	{
 		Vector3 inputDirection = Vector3.Zero;
 		if (Input.IsActionPressed("move_forward"))
@@ -124,11 +125,11 @@ public class PlayerControllerKinematic : KinematicBody
 		float decceleration = IsGrounded() ? Decceleration : 0.5f;
 		if (inputDirection.x == 0f)
 		{
-			targetVelocity = new Vector3(Mathf.Lerp(targetVelocity.x, 0f, decceleration), targetVelocity.y, targetVelocity.z);
+			targetVelocity = new Vector3(Mathf.Lerp(targetVelocity.x, 0f, decceleration * delta), targetVelocity.y, targetVelocity.z);
 		}
 		if (inputDirection.z == 0f)
 		{
-			targetVelocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(targetVelocity.z, 0f, decceleration));
+			targetVelocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(targetVelocity.z, 0f, decceleration * delta));
 		}
 	}
 
@@ -156,12 +157,17 @@ public class PlayerControllerKinematic : KinematicBody
 
 	private void ApplyVelocity(float delta)
 	{
-		Velocity = Velocity.LinearInterpolate(targetVelocity, Acceleration * delta);
-		if (!IsGrounded())
-		{
-			Velocity = new Vector3(Velocity.x * AirMovementSpeedMultiplier, Velocity.y, Velocity.z * AirMovementSpeedMultiplier);
-		}
+		float acceleration = IsGrounded() ? Acceleration : AirAcceleration;
+		Velocity = new Vector3(Mathf.Lerp(Velocity.x, targetVelocity.x, acceleration * delta), targetVelocity.y, targetVelocity.z);
+		Velocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(Velocity.z, targetVelocity.z, acceleration * delta));
 
-		Velocity = MoveAndSlide(Velocity, Transform.basis.y, true);
+		if (IsJumping)
+		{
+			Velocity = MoveAndSlide(Velocity, Transform.basis.y, true);
+		}
+		else
+		{
+			Velocity = MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
+		}
 	}
 }

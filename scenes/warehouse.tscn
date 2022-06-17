@@ -24,11 +24,10 @@ transform = Transform( 1, 0, 0, 0, -0.965926, 0.258819, 0, -0.258819, -0.965926,
 shadow_enabled = true
 
 [node name="Player" type="KinematicBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0 )
 script = ExtResource( 7 )
 MovementSpeed = 10.0
 GravityScale = 0.05
-Acceleration = 10.0
 Sensitivity = Vector2( 0.25, 0.25 )
 FloorRayCastNodePath = NodePath("FloorRayCast")
 CameraNodePath = NodePath("Camera")
