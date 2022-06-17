@@ -1,13 +1,18 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://prefabs/brick_wall1.tscn" type="PackedScene" id=1]
 [ext_resource path="res://main_environment.tres" type="Environment" id=2]
 [ext_resource path="res://prefabs/steel_beam1.tscn" type="PackedScene" id=3]
 [ext_resource path="res://prefabs/level_prototyping/prototype_cube.tscn" type="PackedScene" id=4]
 [ext_resource path="res://prefabs/glass_wall1.tscn" type="PackedScene" id=5]
-[ext_resource path="res://prefabs/player.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scripts/PlayerControllerKinematic.cs" type="Script" id=7]
 [ext_resource path="res://prefabs/concrete_floor.tscn" type="PackedScene" id=8]
 [ext_resource path="res://prefabs/window1.tscn" type="PackedScene" id=9]
+
+[sub_resource type="CapsuleShape" id=1]
+
+[sub_resource type="CapsuleMesh" id=2]
+mid_height = 2.0
 
 [node name="Warehouse" type="Spatial"]
 
@@ -18,7 +23,31 @@ environment = ExtResource( 2 )
 transform = Transform( 1, 0, 0, 0, -0.965926, 0.258819, 0, -0.258819, -0.965926, 0, 0, 0 )
 shadow_enabled = true
 
-[node name="Player" parent="." instance=ExtResource( 6 )]
+[node name="Player" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100, 0 )
+script = ExtResource( 7 )
+MovementSpeed = 10.0
+GravityScale = 0.05
+Friction = 0.2
+Sensitivity = Vector2( 0.25, 0.25 )
+FloorRayCastNodePath = NodePath("FloorRayCast")
+CameraNodePath = NodePath("Camera")
+
+[node name="CollisionShape" type="CollisionShape" parent="Player"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Player/CollisionShape"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="Camera" type="Camera" parent="Player"]
+fov = 90.0
+far = 1000.0
+
+[node name="FloorRayCast" type="RayCast" parent="Player"]
+enabled = true
+cast_to = Vector3( 0, -3, 0 )
 
 [node name="ConcreteFloor1" parent="." instance=ExtResource( 8 )]
 transform = Transform( 50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0 )
