@@ -98,6 +98,10 @@ public class PlayerControllerKinematic : KinematicBody
 		{
 			targetVelocity += Gravity * Mass * GravityScale * delta;
 		}
+		else if (targetVelocity.y < 0f)
+		{
+			targetVelocity.y = 0f;
+		}
 	}
 
 	private void HandleMovementInput(float delta)
@@ -135,7 +139,9 @@ public class PlayerControllerKinematic : KinematicBody
 
 		if (targetVelocity.Length() > MaxMovementSpeed)
 		{
+			float targetVelocityY = targetVelocity.y;
 			targetVelocity = targetVelocity.Normalized() * MaxMovementSpeed;
+			targetVelocity.y = targetVelocityY;
 		}
 	}
 
