@@ -3,6 +3,7 @@ using Godot;
 public class PlayerControllerKinematic : KinematicBody
 {
 	[Export] public float MovementSpeed = 25f;
+	[Export] public float MaxMovementSpeed = 25f;
 	[Export] public float Mass = 80f;
 	[Export] public Vector3 Gravity = new Vector3(0, -9.81f, 0);
 	[Export] public float GravityScale = 1f;
@@ -130,6 +131,11 @@ public class PlayerControllerKinematic : KinematicBody
 		if (inputDirection.z == 0f)
 		{
 			targetVelocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(targetVelocity.z, 0f, decceleration * delta));
+		}
+
+		if (targetVelocity.Length() > MaxMovementSpeed)
+		{
+			targetVelocity = targetVelocity.Normalized() * MaxMovementSpeed;
 		}
 	}
 
