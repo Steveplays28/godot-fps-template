@@ -15,6 +15,7 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export] public float MaxVerticalRotation = 90f;
 	[Export] public float JumpLength = 0.25f;
 	[Export] public float JumpSpeed = 100f;
+	[Export] public int JumpAmount = 2;
 	[Export] private readonly NodePath FloorRayCastNodePath;
 	[Export] private readonly NodePath CameraNodePath;
 
@@ -25,6 +26,7 @@ public class PlayerControllerKinematic : KinematicBody
 	private RayCast floorRayCast;
 	private Camera camera;
 	private float jumpTimeLeft;
+	private int jumpsLeft;
 	private Vector3 targetVelocity;
 
 	public override void _Ready()
@@ -101,6 +103,7 @@ public class PlayerControllerKinematic : KinematicBody
 		else if (targetVelocity.y < 0f)
 		{
 			targetVelocity.y = 0f;
+			jumpsLeft = JumpAmount;
 		}
 	}
 
@@ -147,10 +150,11 @@ public class PlayerControllerKinematic : KinematicBody
 
 	private void HandleJumpInput(float delta)
 	{
-		if (Input.IsActionJustPressed("jump"))
+		if (Input.IsActionJustPressed("jump") && jumpsLeft > 0)
 		{
 			IsJumping = true;
 			jumpTimeLeft = JumpLength;
+			jumpsLeft -= 1;
 		}
 
 		if (IsJumping)
