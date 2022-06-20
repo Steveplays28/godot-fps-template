@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://resources/models/human1/human1.glb" type="PackedScene" id=1]
 
@@ -519,18 +519,23 @@ animation = "Idle-loop"
 
 [sub_resource type="AnimationNodeBlend2" id=9]
 
+[sub_resource type="AnimationNodeTimeScale" id=10]
+
 [sub_resource type="AnimationNodeAnimation" id=2]
 animation = "Walk-loop"
 
 [sub_resource type="AnimationNodeBlendTree" id=1]
-graph_offset = Vector2( -652, 31 )
+graph_offset = Vector2( -473, 59 )
 nodes/idle_animation/node = SubResource( 3 )
 nodes/idle_animation/position = Vector2( -460, 80 )
 nodes/idle_walk_blend/node = SubResource( 9 )
 nodes/idle_walk_blend/position = Vector2( -100, 80 )
+nodes/output/position = Vector2( 500, 80 )
+nodes/time_scale/node = SubResource( 10 )
+nodes/time_scale/position = Vector2( 180, 80 )
 nodes/walk_animation/node = SubResource( 2 )
 nodes/walk_animation/position = Vector2( -460, 200 )
-node_connections = [ "output", 0, "idle_walk_blend", "idle_walk_blend", 0, "idle_animation", "idle_walk_blend", 1, "walk_animation" ]
+node_connections = [ "output", 0, "time_scale", "time_scale", 0, "idle_walk_blend", "idle_walk_blend", 0, "idle_animation", "idle_walk_blend", 1, "walk_animation" ]
 
 [node name="Human1" instance=ExtResource( 1 )]
 
@@ -545,3 +550,4 @@ anim_player = NodePath("../AnimationPlayer")
 active = true
 process_mode = 0
 parameters/idle_walk_blend/blend_amount = 0.0
+parameters/time_scale/scale = 1.0

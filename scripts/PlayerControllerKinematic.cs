@@ -188,13 +188,18 @@ public class PlayerControllerKinematic : KinematicBody
 		{
 			Velocity = MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
 
-			if (Velocity.Abs().Length() > Mathf.Epsilon)
+			float idle_walk_blend_amount = (float)animationTree.Get("parameters/idle_walk_blend/blend_amount");
+			if (Velocity.Abs().Length() > 0.1f)
 			{
-				animationTree.Set("parameters/idle_walk_blend/blend_amount", 1f);
+				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount + delta, 0f, 1f));
+				animationTree.Set("parameters/time_scale/scale", Velocity.Rotated(Vector3.Up, Rotation.y).Length() / MaxMovementSpeed);
 			}
 			else
 			{
-				animationTree.Set("parameters/idle_walk_blend/blend_amount", 0f);
+				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount - delta, 0f, 1f));
+
+				float time_scale = (float)animationTree.Get("parameters/time_scale/scale");
+				animationTree.Set("parameters/time_scale/scale", Mathf.Clamp(time_scale + delta, 0f, 1f));
 			}
 		}
 	}
