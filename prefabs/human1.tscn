@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://resources/models/human1/human1.glb" type="PackedScene" id=1]
 
@@ -514,6 +514,8 @@ tracks/25/imported = false
 tracks/25/enabled = true
 tracks/25/keys = PoolRealArray( 0, 1, 0, 0, 0, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.0666667, 1, -0.0161418, -7.45058e-09, -0.00876784, -4.65661e-10, 4.62019e-13, -3.55271e-15, 1, 1, 1, 1, 0.133333, 1, -0.0433497, -7.45058e-09, -0.0235462, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.2, 1, -0.0448158, 0, -0.0228766, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.266667, 1, -0.0238548, -1.49012e-08, -0.00379038, 5.96046e-08, 1.00614e-14, 4.52971e-13, 1, 1, 1, 1, 0.333333, 1, -4.74142e-08, 3.72529e-08, 0.00753301, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.4, 1, 0.0221889, 3.72529e-08, -0.00473595, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.466667, 1, 0.0426439, 3.72529e-08, -0.0285066, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.533333, 1, 0.0462753, -7.45058e-09, -0.0346024, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.6, 1, 0.0194806, -7.45058e-09, -0.0145667, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1, 0.666667, 1, 0, 0, 0, -3.87528e-29, 7.27196e-15, -1.77636e-15, 1, 1, 1, 1 )
 
+[sub_resource type="AnimationNodeTimeScale" id=11]
+
 [sub_resource type="AnimationNodeAnimation" id=3]
 animation = "Idle-loop"
 
@@ -525,17 +527,19 @@ animation = "Idle-loop"
 animation = "Walk-loop"
 
 [sub_resource type="AnimationNodeBlendTree" id=1]
-graph_offset = Vector2( -473, 59 )
+graph_offset = Vector2( -787.12, -94.68 )
+nodes/TimeScale/node = SubResource( 11 )
+nodes/TimeScale/position = Vector2( -400, 40 )
 nodes/idle_animation/node = SubResource( 3 )
-nodes/idle_animation/position = Vector2( -460, 80 )
+nodes/idle_animation/position = Vector2( -640, 40 )
 nodes/idle_walk_blend/node = SubResource( 9 )
 nodes/idle_walk_blend/position = Vector2( -100, 80 )
 nodes/output/position = Vector2( 500, 80 )
 nodes/time_scale/node = SubResource( 10 )
 nodes/time_scale/position = Vector2( 180, 80 )
 nodes/walk_animation/node = SubResource( 2 )
-nodes/walk_animation/position = Vector2( -460, 200 )
-node_connections = [ "output", 0, "time_scale", "time_scale", 0, "idle_walk_blend", "idle_walk_blend", 0, "idle_animation", "idle_walk_blend", 1, "walk_animation" ]
+nodes/walk_animation/position = Vector2( -640, 240 )
+node_connections = [ "output", 0, "time_scale", "time_scale", 0, "idle_walk_blend", "TimeScale", 0, "idle_animation", "idle_walk_blend", 0, "TimeScale", "idle_walk_blend", 1, "walk_animation" ]
 
 [node name="Human1" instance=ExtResource( 1 )]
 
@@ -549,5 +553,6 @@ tree_root = SubResource( 1 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 process_mode = 0
+parameters/TimeScale/scale = 0.5
 parameters/idle_walk_blend/blend_amount = 0.0
 parameters/time_scale/scale = 1.0
