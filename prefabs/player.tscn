@@ -1,48 +1,42 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://resources/materials/physics/zero_friction.tres" type="PhysicsMaterial" id=1]
+[ext_resource path="res://scripts/PlayerControllerKinematic.cs" type="Script" id=1]
 [ext_resource path="res://prefabs/gun1.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scripts/PlayerController.cs" type="Script" id=4]
-[ext_resource path="res://resources/materials/white.tres" type="Material" id=5]
+[ext_resource path="res://prefabs/human1.tscn" type="PackedScene" id=3]
 
-[sub_resource type="BoxShape" id=2]
-extents = Vector3( 1, 2, 1 )
+[sub_resource type="CapsuleShape" id=1]
+radius = 0.5
 
-[sub_resource type="CubeMesh" id=3]
-
-[node name="Player" type="RigidBody"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0 )
-mass = 80.0
-physics_material_override = ExtResource( 1 )
-gravity_scale = 1.5
-continuous_cd = true
-contacts_reported = 1
-contact_monitor = true
-can_sleep = false
-axis_lock_angular_x = true
-axis_lock_angular_y = true
-axis_lock_angular_z = true
-linear_damp = 0.0
-script = ExtResource( 4 )
-sensitivity = Vector2( 0.12, 0.12 )
-accelerationMultiplier = 10.0
-deccelerationMultiplier = 0.5
+[node name="Player" type="KinematicBody"]
+script = ExtResource( 1 )
+MovementSpeed = 2.0
+GravityScale = 0.05
+AirAcceleration = 1.0
+Sensitivity = Vector2( 0.25, 0.25 )
+FloorRayCastNodePath = NodePath("FloorRayCast")
+CameraNodePath = NodePath("Camera")
+AnimationTreeNodePath = "Human1/AnimationTree"
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 2 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1, 0 )
+shape = SubResource( 1 )
 
-[node name="MeshInstance" type="MeshInstance" parent="CollisionShape"]
-transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
-mesh = SubResource( 3 )
-material/0 = ExtResource( 5 )
+[node name="Human1" parent="." instance=ExtResource( 3 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
 
-[node name="Camera" type="Camera" parent="CollisionShape"]
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -0.15 )
 fov = 90.0
 far = 1000.0
 
-[node name="Gun1" parent="CollisionShape/Camera" instance=ExtResource( 2 )]
-transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 1.5, -0.5, 0.5 )
-PlayerNodePath = NodePath("../../..")
+[node name="Gun1" parent="Camera" instance=ExtResource( 2 )]
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.5, -0.531591, -0.177454 )
+PlayerNodePath = NodePath("../..")
 CameraNodePath = NodePath("..")
 HorizontalRotationNodePath = NodePath("../..")
 AimDownSightPosition = Vector3( 0, -0.4, -0.5 )
+
+[node name="FloorRayCast" type="RayCast" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
+enabled = true
+cast_to = Vector3( 0, -0.75, 0 )

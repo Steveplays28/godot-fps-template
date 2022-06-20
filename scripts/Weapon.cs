@@ -5,9 +5,9 @@ using SteveUtility;
 public class Weapon : Spatial
 {
 	[Export] public NodePath PlayerNodePath;
-	[Export] public NodePath CameraNodePath = "/root/Spatial/Player/CollisionShape/Camera";
+	[Export] public NodePath CameraNodePath;
 	[Export] public string UIManagerNodePath = "/root/UI";
-	[Export] public NodePath HorizontalRotationNodePath = "/root/Spatial/Player/CollisionShape";
+	[Export] public NodePath HorizontalRotationNodePath;
 	[Export] public NodePath RayCastNodePath = "Muzzle";
 	[Export] public NodePath MuzzleFlashNodePath = "Muzzle/MuzzleFlash";
 	[Export] public NodePath SmokeTrailNodePath = "Muzzle/SmokeTrail";
@@ -141,7 +141,7 @@ public class Weapon : Spatial
 		}
 
 		// Vertical recoil
-		float maxRotationXDegrees = (float)player.Get("MaxRotationXDegrees");
+		float maxRotationXDegrees = (float)player.Get("MaxVerticalRotation");
 		float recoilVertical = rng.RandfRange(RecoilVerticalLowerLimitDegrees, RecoilVerticalUpperLimitDegrees);
 		if (recoilVertical >= 0)
 		{

@@ -18,6 +18,7 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export] public int JumpAmount = 2;
 	[Export] private readonly NodePath FloorRayCastNodePath;
 	[Export] private readonly NodePath CameraNodePath;
+	[Export] private readonly string AnimationTreeNodePath;
 
 	public Vector3 Velocity { get; private set; } = Vector3.Zero;
 	public Vector3 VelocityLocal { get; private set; } = Vector3.Zero;
@@ -25,6 +26,7 @@ public class PlayerControllerKinematic : KinematicBody
 
 	private RayCast floorRayCast;
 	private Camera camera;
+	private AnimationTree animationTree;
 	private float jumpTimeLeft;
 	private int jumpsLeft;
 	private Vector3 targetVelocity;
@@ -33,6 +35,7 @@ public class PlayerControllerKinematic : KinematicBody
 	{
 		floorRayCast = GetNode<RayCast>(FloorRayCastNodePath);
 		camera = GetNode<Camera>(CameraNodePath);
+		animationTree = GetNode<AnimationTree>(AnimationTreeNodePath);
 	}
 
 	public override void _PhysicsProcess(float delta)
@@ -184,6 +187,15 @@ public class PlayerControllerKinematic : KinematicBody
 		else
 		{
 			Velocity = MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
+
+			if (Velocity.Abs().Length() > Mathf.Epsilon)
+			{
+				animationTree.Set("parameters/idle_walk_blend/blend_amount", 1f);
+			}
+			else
+			{
+				animationTree.Set("parameters/idle_walk_blend/blend_amount", 0f);
+			}
 		}
 	}
 }
