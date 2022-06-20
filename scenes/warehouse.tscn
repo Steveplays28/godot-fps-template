@@ -19,7 +19,7 @@ transform = Transform( 1, 0, 0, 0, -0.965926, 0.258819, 0, -0.258819, -0.965926,
 shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource( 6 )]
-transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="ConcreteFloor1" parent="." instance=ExtResource( 8 )]
 transform = Transform( 50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0 )

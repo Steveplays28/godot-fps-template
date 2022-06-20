@@ -55,7 +55,7 @@ nodes/reload_one_shot/position = Vector2( 380, 100 )
 node_connections = [ "output", 0, "reload_one_shot", "TimeScale", 0, "reload_animation", "reload_one_shot", 0, "idle_animation", "reload_one_shot", 1, "TimeScale" ]
 
 [node name="Gun1" instance=ExtResource( 1 )]
-transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 2 )
+transform = Transform( 0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0 )
 script = ExtResource( 2 )
 AimDownSightPosition = Vector3( 0, -0.4, 0 )
 

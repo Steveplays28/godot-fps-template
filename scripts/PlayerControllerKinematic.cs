@@ -2,8 +2,8 @@ using Godot;
 
 public class PlayerControllerKinematic : KinematicBody
 {
-	[Export] public float MovementSpeed = 25f;
-	[Export] public float MaxMovementSpeed = 25f;
+	[Export] public float MaxMovementSpeed = 10f;
+	[Export] public float MaxSprintMovementSpeed = 25f;
 	[Export] public float Mass = 80f;
 	[Export] public Vector3 Gravity = new Vector3(0, -9.81f, 0);
 	[Export] public float GravityScale = 1f;
@@ -131,7 +131,17 @@ public class PlayerControllerKinematic : KinematicBody
 		}
 		inputDirection = inputDirection.Normalized();
 
-		targetVelocity += inputDirection * MovementSpeed;
+		float maxMovementSpeed;
+		if (Input.IsActionPressed("sprint"))
+		{
+			targetVelocity += inputDirection * MaxSprintMovementSpeed;
+			maxMovementSpeed = MaxSprintMovementSpeed;
+		}
+		else
+		{
+			targetVelocity += inputDirection * MaxMovementSpeed;
+			maxMovementSpeed = MaxMovementSpeed;
+		}
 
 		float decceleration = IsGrounded() ? Decceleration : 0.5f;
 		if (inputDirection.x == 0f)
@@ -143,10 +153,10 @@ public class PlayerControllerKinematic : KinematicBody
 			targetVelocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(targetVelocity.z, 0f, decceleration * delta));
 		}
 
-		if (targetVelocity.Length() > MaxMovementSpeed)
+		if (targetVelocity.Length() > maxMovementSpeed)
 		{
 			float targetVelocityY = targetVelocity.y;
-			targetVelocity = targetVelocity.Normalized() * MaxMovementSpeed;
+			targetVelocity = targetVelocity.Normalized() * maxMovementSpeed;
 			targetVelocity.y = targetVelocityY;
 		}
 	}
@@ -192,7 +202,7 @@ public class PlayerControllerKinematic : KinematicBody
 			if (Velocity.Abs().Length() > 0.1f)
 			{
 				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount + delta, 0f, 1f));
-				animationTree.Set("parameters/time_scale/scale", Velocity.Rotated(Vector3.Up, Rotation.y).Length() / MaxMovementSpeed);
+				animationTree.Set("parameters/time_scale/scale", Velocity.Rotated(Vector3.Up, Rotation.y).Length() / MaxMovementSpeed / 2f);
 			}
 			else
 			{
