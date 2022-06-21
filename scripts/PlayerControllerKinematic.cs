@@ -17,7 +17,7 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export] public float JumpSpeed = 100f;
 	[Export] public int JumpAmount = 2;
 	[Export(PropertyHint.Range, "0, 100")] public float CameraRollMultiplier = 0.1f;
-	[Export(PropertyHint.Range, "0, 100")] public float CameraRollSpeed = 0.05f;
+	[Export(PropertyHint.Range, "0, 100")] public float CameraRollSpeed = 0.1f;
 	[Export] private readonly NodePath FloorRayCastNodePath;
 	[Export] private readonly NodePath CameraNodePath;
 	[Export] private readonly string AnimationTreeNodePath;
