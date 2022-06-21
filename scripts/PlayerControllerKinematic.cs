@@ -16,6 +16,10 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export] public float JumpLength = 0.25f;
 	[Export] public float JumpSpeed = 100f;
 	[Export] public int JumpAmount = 2;
+	[Export(PropertyHint.Range, "0, 100")] public float CameraRollMultiplier = 0.1f;
+	[Export(PropertyHint.Range, "0, 100")] public float CameraRollSpeed = 0.05f;
+	[Export(PropertyHint.Range, "0, 100")] public float CameraPitchMultiplier = 0.1f;
+	[Export(PropertyHint.Range, "0, 100")] public float CameraPitchSpeed = 0.05f;
 	[Export] private readonly NodePath FloorRayCastNodePath;
 	[Export] private readonly NodePath CameraNodePath;
 	[Export] private readonly string AnimationTreeNodePath;
@@ -141,13 +145,13 @@ public class PlayerControllerKinematic : KinematicBody
 		{
 			inputDirection += Transform.basis.x;
 
-			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z - 0.1f * maxMovementSpeed, -2f, 2f);
+			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z - CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed);
 		}
 		if (Input.IsActionPressed("move_left"))
 		{
 			inputDirection -= Transform.basis.x;
 
-			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z + 0.1f * maxMovementSpeed, -2f, 2f);
+			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z + CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed);
 		}
 		inputDirection = inputDirection.Normalized();
 		camera.RotationDegrees = cameraRotationDegrees;
