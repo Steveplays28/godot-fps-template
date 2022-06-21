@@ -20,6 +20,7 @@ shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource( 6 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+CameraRollSpeed = 0.1
 
 [node name="ConcreteFloor1" parent="." instance=ExtResource( 8 )]
 transform = Transform( 50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0 )

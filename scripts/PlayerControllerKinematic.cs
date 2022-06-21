@@ -143,17 +143,21 @@ public class PlayerControllerKinematic : KinematicBody
 		{
 			inputDirection += Transform.basis.x;
 
-			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z - CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed);
+			cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z - CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
 		}
 		if (Input.IsActionPressed("move_left"))
 		{
 			inputDirection -= Transform.basis.x;
 
-			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z + CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed);
+			cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z + CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
 		}
-		inputDirection = inputDirection.Normalized();
-		camera.RotationDegrees = cameraRotationDegrees;
+		if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
+		{
+			cameraRotationDegrees.z = Mathf.Lerp(camera.RotationDegrees.z, 0f, CameraRollSpeed);
+		}
 
+		camera.RotationDegrees = cameraRotationDegrees;
+		inputDirection = inputDirection.Normalized();
 		targetVelocity += inputDirection * maxMovementSpeed;
 
 		float decceleration = IsGrounded() ? Decceleration : 0.5f;
@@ -225,10 +229,10 @@ public class PlayerControllerKinematic : KinematicBody
 				animationTree.Set("parameters/time_scale/scale", Mathf.Clamp(time_scale + delta, 0f, 1f));
 			}
 
-			if (GetLocalVelocity().Abs().x < 1f)
-			{
-				camera.RotationDegrees = new Vector3(camera.RotationDegrees.x, camera.RotationDegrees.y, 0f);
-			}
+			// if (GetLocalVelocity().Abs().x < 1f)
+			// {
+			// 	camera.RotationDegrees = new Vector3(camera.RotationDegrees.x, camera.RotationDegrees.y, Mathf.Lerp(camera.RotationDegrees.z, 0f, CameraRollSpeed));
+			// }
 		}
 	}
 }
