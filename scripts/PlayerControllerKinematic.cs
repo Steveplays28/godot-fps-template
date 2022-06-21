@@ -10,7 +10,7 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export(PropertyHint.Range, "0, 100")] public float Acceleration = 10f;
 	[Export(PropertyHint.Range, "0, 100")] public float AirAcceleration = 5f;
 	[Export(PropertyHint.Range, "0, 100")] public float Decceleration = 10f;
-	[Export(PropertyHint.Range, "0, 100")] public float AirDecceleration = 5f;
+	[Export(PropertyHint.Range, "0, 100")] public float AirDecceleration = 0.5f;
 	[Export] public Vector2 Sensitivity = new Vector2(1f, 1f);
 	[Export] public float MaxVerticalRotation = 90f;
 	[Export] public float JumpLength = 0.25f;
@@ -25,6 +25,7 @@ public class PlayerControllerKinematic : KinematicBody
 	public Vector3 Velocity { get; private set; } = Vector3.Zero;
 	public Vector3 VelocityLocal { get; private set; } = Vector3.Zero;
 	public bool IsJumping { get; private set; } = false;
+	public bool IsSliding { get; private set; } = false;
 
 	private RayCast floorRayCast;
 	private Camera camera;
@@ -48,6 +49,7 @@ public class PlayerControllerKinematic : KinematicBody
 		HandleRestartInput();
 
 		HandleGravity(delta);
+		HandleSlideInput();
 		HandleMovementInput(delta);
 		HandleJumpInput(delta);
 		ApplyVelocity(delta);
@@ -117,6 +119,18 @@ public class PlayerControllerKinematic : KinematicBody
 		}
 	}
 
+	private void HandleSlideInput()
+	{
+		if (Input.IsActionJustPressed("slide"))
+		{
+			IsSliding = true;
+		}
+		if (Input.IsActionJustReleased("slide"))
+		{
+			IsSliding = false;
+		}
+	}
+
 	private void HandleMovementInput(float delta)
 	{
 		float maxMovementSpeed;
@@ -160,7 +174,8 @@ public class PlayerControllerKinematic : KinematicBody
 		inputDirection = inputDirection.Normalized();
 		targetVelocity += inputDirection * maxMovementSpeed;
 
-		float decceleration = IsGrounded() ? Decceleration : 0.5f;
+		float decceleration = IsGrounded() ? Decceleration : AirDecceleration;
+		decceleration = IsSliding ? 0f : decceleration;
 		if (inputDirection.x == 0f)
 		{
 			targetVelocity = new Vector3(Mathf.Lerp(targetVelocity.x, 0f, decceleration * delta), targetVelocity.y, targetVelocity.z);
@@ -228,11 +243,6 @@ public class PlayerControllerKinematic : KinematicBody
 				float time_scale = (float)animationTree.Get("parameters/time_scale/scale");
 				animationTree.Set("parameters/time_scale/scale", Mathf.Clamp(time_scale + delta, 0f, 1f));
 			}
-
-			// if (GetLocalVelocity().Abs().x < 1f)
-			// {
-			// 	camera.RotationDegrees = new Vector3(camera.RotationDegrees.x, camera.RotationDegrees.y, Mathf.Lerp(camera.RotationDegrees.z, 0f, CameraRollSpeed));
-			// }
 		}
 	}
 }
