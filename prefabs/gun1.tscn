@@ -52,7 +52,7 @@ nodes/reload_animation/node = SubResource( 19 )
 nodes/reload_animation/position = Vector2( -200, 180 )
 nodes/reload_one_shot/node = SubResource( 20 )
 nodes/reload_one_shot/position = Vector2( 380, 100 )
-node_connections = [ "output", 0, "reload_one_shot", "TimeScale", 0, "reload_animation", "reload_one_shot", 0, "idle_animation", "reload_one_shot", 1, "TimeScale" ]
+node_connections = [ "output", 0, "reload_one_shot", "reload_one_shot", 0, "idle_animation", "reload_one_shot", 1, "TimeScale", "TimeScale", 0, "reload_animation" ]
 
 [node name="Gun1" instance=ExtResource( 1 )]
 transform = Transform( 0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0 )

@@ -74,6 +74,11 @@ public class PlayerControllerKinematic : KinematicBody
 		return floorRayCast.IsColliding();
 	}
 
+	public Vector3 GetLocalVelocity()
+	{
+		return Velocity.Rotated(Vector3.Up, Rotation.y);
+	}
+
 	private void HandleMouseCursorVisibilityInput()
 	{
 		if (Input.IsActionJustPressed("toggle_mouse_cursor_visibility"))
@@ -112,7 +117,18 @@ public class PlayerControllerKinematic : KinematicBody
 
 	private void HandleMovementInput(float delta)
 	{
+		float maxMovementSpeed;
+		if (Input.IsActionPressed("sprint"))
+		{
+			maxMovementSpeed = MaxSprintMovementSpeed;
+		}
+		else
+		{
+			maxMovementSpeed = MaxMovementSpeed;
+		}
+
 		Vector3 inputDirection = Vector3.Zero;
+		Vector3 cameraRotationDegrees = camera.RotationDegrees;
 		if (Input.IsActionPressed("move_forward"))
 		{
 			inputDirection -= Transform.basis.z;
@@ -124,24 +140,19 @@ public class PlayerControllerKinematic : KinematicBody
 		if (Input.IsActionPressed("move_right"))
 		{
 			inputDirection += Transform.basis.x;
+
+			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z - 0.1f * maxMovementSpeed, -2f, 2f);
 		}
 		if (Input.IsActionPressed("move_left"))
 		{
 			inputDirection -= Transform.basis.x;
+
+			cameraRotationDegrees.z = Mathf.Clamp(cameraRotationDegrees.z + 0.1f * maxMovementSpeed, -2f, 2f);
 		}
 		inputDirection = inputDirection.Normalized();
+		camera.RotationDegrees = cameraRotationDegrees;
 
-		float maxMovementSpeed;
-		if (Input.IsActionPressed("sprint"))
-		{
-			targetVelocity += inputDirection * MaxSprintMovementSpeed;
-			maxMovementSpeed = MaxSprintMovementSpeed;
-		}
-		else
-		{
-			targetVelocity += inputDirection * MaxMovementSpeed;
-			maxMovementSpeed = MaxMovementSpeed;
-		}
+		targetVelocity += inputDirection * maxMovementSpeed;
 
 		float decceleration = IsGrounded() ? Decceleration : 0.5f;
 		if (inputDirection.x == 0f)
@@ -202,7 +213,7 @@ public class PlayerControllerKinematic : KinematicBody
 			if (Velocity.Abs().Length() > 0.1f)
 			{
 				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount + delta, 0f, 1f));
-				animationTree.Set("parameters/time_scale/scale", Velocity.Rotated(Vector3.Up, Rotation.y).Length() / MaxMovementSpeed / 2f);
+				animationTree.Set("parameters/time_scale/scale", GetLocalVelocity().Length() / MaxMovementSpeed / 2f);
 			}
 			else
 			{
@@ -210,6 +221,11 @@ public class PlayerControllerKinematic : KinematicBody
 
 				float time_scale = (float)animationTree.Get("parameters/time_scale/scale");
 				animationTree.Set("parameters/time_scale/scale", Mathf.Clamp(time_scale + delta, 0f, 1f));
+			}
+
+			if (GetLocalVelocity().Abs().x < 1f)
+			{
+				camera.RotationDegrees = new Vector3(camera.RotationDegrees.x, camera.RotationDegrees.y, 0f);
 			}
 		}
 	}
