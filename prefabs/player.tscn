@@ -1739,7 +1739,7 @@ nodes/time_scale/node = SubResource( 10 )
 nodes/time_scale/position = Vector2( 180, 80 )
 nodes/walk_animation/node = SubResource( 16 )
 nodes/walk_animation/position = Vector2( -640, 240 )
-node_connections = [ "output", 0, "time_scale", "time_scale", 0, "idle_walk_blend", "idle_time_scale", 0, "idle_animation", "idle_walk_blend", 0, "idle_time_scale", "idle_walk_blend", 1, "walk_animation" ]
+node_connections = [ "output", 0, "time_scale", "time_scale", 0, "idle_walk_blend", "idle_walk_blend", 0, "idle_time_scale", "idle_walk_blend", 1, "walk_animation", "idle_time_scale", 0, "idle_animation" ]
 
 [sub_resource type="CapsuleShape" id=18]
 radius = 0.5
@@ -1749,9 +1749,10 @@ script = ExtResource( 1 )
 GravityScale = 0.05
 AirAcceleration = 1.0
 Sensitivity = Vector2( 0.25, 0.25 )
-FloorRayCastNodePath = NodePath("FloorRayCast")
 CameraNodePath = NodePath("Camera")
 AnimationTreeNodePath = "AnimationTree"
+FloorRayCastNodePath = NodePath("FloorRayCast")
+ClimbRayCastNodePath = NodePath("ClimbRayCast")
 
 [node name="Skeleton" type="Skeleton" parent="."]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
@@ -1940,6 +1941,11 @@ shape = SubResource( 18 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
 enabled = true
 cast_to = Vector3( 0, -0.75, 0 )
+
+[node name="ClimbRayCast" type="RayCast" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
+enabled = true
+cast_to = Vector3( 0, 0, -3 )
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -0.15 )

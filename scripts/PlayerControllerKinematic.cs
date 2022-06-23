@@ -18,27 +18,32 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export] public int JumpAmount = 2;
 	[Export(PropertyHint.Range, "0, 100")] public float CameraRollMultiplier = 0.1f;
 	[Export(PropertyHint.Range, "0, 100")] public float CameraRollSpeed = 0.1f;
-	[Export] private readonly NodePath FloorRayCastNodePath;
+	[Export(PropertyHint.Range, "0, 100")] public float ClimbHeight = 10f;
+	[Export(PropertyHint.Range, "0, 100")] public float ClimbLunge = 10f;
 	[Export] private readonly NodePath CameraNodePath;
 	[Export] private readonly string AnimationTreeNodePath;
+	[Export] private readonly NodePath FloorRayCastNodePath;
+	[Export] private readonly NodePath ClimbRayCastNodePath;
 
 	public Vector3 Velocity { get; private set; } = Vector3.Zero;
 	public Vector3 VelocityLocal { get; private set; } = Vector3.Zero;
 	public bool IsJumping { get; private set; } = false;
 	public bool IsSliding { get; private set; } = false;
 
-	private RayCast floorRayCast;
 	private Camera camera;
 	private AnimationTree animationTree;
+	private RayCast floorRayCast;
+	private RayCast climbRayCast;
 	private float jumpTimeLeft;
 	private int jumpsLeft;
 	private Vector3 targetVelocity;
 
 	public override void _Ready()
 	{
-		floorRayCast = GetNode<RayCast>(FloorRayCastNodePath);
 		camera = GetNode<Camera>(CameraNodePath);
 		animationTree = GetNode<AnimationTree>(AnimationTreeNodePath);
+		floorRayCast = GetNode<RayCast>(FloorRayCastNodePath);
+		climbRayCast = GetNode<RayCast>(ClimbRayCastNodePath);
 	}
 
 	public override void _PhysicsProcess(float delta)
@@ -52,6 +57,8 @@ public class PlayerControllerKinematic : KinematicBody
 		HandleSlideInput();
 		HandleMovementInput(delta);
 		HandleJumpInput(delta);
+		HandleClimb();
+
 		ApplyVelocity(delta);
 	}
 
@@ -81,6 +88,36 @@ public class PlayerControllerKinematic : KinematicBody
 	public Vector3 GetLocalVelocity()
 	{
 		return Velocity.Rotated(Vector3.Up, Rotation.y);
+	}
+
+	private void ApplyVelocity(float delta)
+	{
+		float acceleration = IsGrounded() ? Acceleration : AirAcceleration;
+		Velocity = new Vector3(Mathf.Lerp(Velocity.x, targetVelocity.x, acceleration * delta), targetVelocity.y, targetVelocity.z);
+		Velocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(Velocity.z, targetVelocity.z, acceleration * delta));
+
+		if (IsJumping)
+		{
+			Velocity = MoveAndSlide(Velocity, Transform.basis.y, true);
+		}
+		else
+		{
+			Velocity = MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
+
+			float idle_walk_blend_amount = (float)animationTree.Get("parameters/idle_walk_blend/blend_amount");
+			if (Velocity.Abs().Length() > 0.1f)
+			{
+				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount + delta, 0f, 1f));
+				animationTree.Set("parameters/time_scale/scale", GetLocalVelocity().Length() / MaxMovementSpeed / 2f);
+			}
+			else
+			{
+				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount - delta, 0f, 1f));
+
+				float time_scale = (float)animationTree.Get("parameters/time_scale/scale");
+				animationTree.Set("parameters/time_scale/scale", Mathf.Clamp(time_scale + delta, 0f, 1f));
+			}
+		}
 	}
 
 	private void HandleMouseCursorVisibilityInput()
@@ -216,33 +253,11 @@ public class PlayerControllerKinematic : KinematicBody
 		}
 	}
 
-	private void ApplyVelocity(float delta)
+	private void HandleClimb()
 	{
-		float acceleration = IsGrounded() ? Acceleration : AirAcceleration;
-		Velocity = new Vector3(Mathf.Lerp(Velocity.x, targetVelocity.x, acceleration * delta), targetVelocity.y, targetVelocity.z);
-		Velocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(Velocity.z, targetVelocity.z, acceleration * delta));
-
-		if (IsJumping)
+		if (climbRayCast.IsColliding() && Mathf.Rad2Deg(climbRayCast.GetCollisionNormal().AngleTo(Vector3.Up)) >= 90f)
 		{
-			Velocity = MoveAndSlide(Velocity, Transform.basis.y, true);
-		}
-		else
-		{
-			Velocity = MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
-
-			float idle_walk_blend_amount = (float)animationTree.Get("parameters/idle_walk_blend/blend_amount");
-			if (Velocity.Abs().Length() > 0.1f)
-			{
-				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount + delta, 0f, 1f));
-				animationTree.Set("parameters/time_scale/scale", GetLocalVelocity().Length() / MaxMovementSpeed / 2f);
-			}
-			else
-			{
-				animationTree.Set("parameters/idle_walk_blend/blend_amount", Mathf.Clamp(idle_walk_blend_amount - delta, 0f, 1f));
-
-				float time_scale = (float)animationTree.Get("parameters/time_scale/scale");
-				animationTree.Set("parameters/time_scale/scale", Mathf.Clamp(time_scale + delta, 0f, 1f));
-			}
+			targetVelocity = Transform.basis.y * ClimbHeight - Transform.basis.z * ClimbLunge;
 		}
 	}
 }

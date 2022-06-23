@@ -2,7 +2,7 @@ using Godot;
 
 public class EntityHealth : Node
 {
-	[Export] public int Health = 100;
+	[Export] public int Health { get; private set; } = 100;
 
 	[Signal] public delegate void HealthChanged(int oldHealth, int newHealth, int difference);
 
@@ -12,9 +12,15 @@ public class EntityHealth : Node
 
 		if (Input.IsKeyPressed((int)KeyList.T))
 		{
-			int oldHealth = Health;
-			Health -= 1;
-			EmitSignal(nameof(HealthChanged), oldHealth, Health, oldHealth - Health);
+			SetHealth(Health - 1);
 		}
+	}
+
+	public void SetHealth(int newHealth)
+	{
+		int oldHealth = Health;
+		Health = newHealth;
+
+		EmitSignal(nameof(HealthChanged), oldHealth, Health, Health - oldHealth);
 	}
 }
