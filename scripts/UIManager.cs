@@ -9,10 +9,11 @@ public class UIManager : Control
 
 	public Control NonDebugUI;
 	public Control DebugUI;
+	public AnimationPlayer AnimationPlayer;
+
 	public Label DebugLabel;
 	public TextureRect Crosshair;
-
-	private string currentSceneRootNodePath;
+	public ProgressBar HealthBar;
 
 	public override void _Ready()
 	{
@@ -20,10 +21,13 @@ public class UIManager : Control
 
 		NonDebugUI = GetNode<Control>("NonDebug");
 		DebugUI = GetNode<Control>("Debug");
+		AnimationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+
 		DebugLabel = DebugUI.GetNode<Label>("DebugLabel");
 		Crosshair = NonDebugUI.GetNode<TextureRect>("Crosshair");
+		HealthBar = NonDebugUI.GetNode<ProgressBar>("HealthBar");
 
-		currentSceneRootNodePath = GetTree().CurrentScene.GetPath().ToString();
+		ReferenceManager.Player.GetNode(nameof(EntityHealth)).Connect(nameof(EntityHealth.HealthChanged), this, nameof(PlayerHealthChanged));
 
 		if (IsNonDebugUIVisible)
 		{
@@ -50,7 +54,7 @@ public class UIManager : Control
 
 		if (IsDebugUIVisible)
 		{
-			Spatial player = GetNode<Spatial>($"{currentSceneRootNodePath}/Player");
+			KinematicBody player = GetTree().CurrentScene.GetNode<KinematicBody>("Player");
 			DebugLabel.Text = $"FPS: {1 / delta}\n\nGlobal position: {player.GlobalTransform.origin}\nGlobal linear velocity: {player.Get("Velocity")}\n\nLocal linear velocity: {player.Call(nameof(PlayerController.LinearVelocityLocal))}";
 		}
 
@@ -93,4 +97,15 @@ public class UIManager : Control
 			IsDebugUIVisible = true;
 		}
 	}
+
+#pragma warning disable IDE0060
+	private void PlayerHealthChanged(int oldHealth, int newHealth, int difference)
+	{
+		ProgressBar healthBar = GetNode<ProgressBar>("NonDebug/HealthBar");
+		healthBar.Value = newHealth;
+
+		AnimationPlayer.Stop(true);
+		AnimationPlayer.Play("player_health_changed");
+	}
+#pragma warning restore IDE0060
 }

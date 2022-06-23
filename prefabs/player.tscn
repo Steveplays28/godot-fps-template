@@ -1,8 +1,9 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://scripts/PlayerControllerKinematic.cs" type="Script" id=1]
 [ext_resource path="res://prefabs/gun1.tscn" type="PackedScene" id=2]
 [ext_resource path="res://resources/models/human1/MaleSkin.material" type="Material" id=3]
+[ext_resource path="res://prefabs/components/entity_health.tscn" type="PackedScene" id=4]
 
 [sub_resource type="ArrayMesh" id=1]
 resource_name = "human1_meHumanMale"
@@ -1947,7 +1948,10 @@ far = 1000.0
 
 [node name="Gun1" parent="Camera" instance=ExtResource( 2 )]
 transform = Transform( 0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0.25, -0.35, -0.5 )
+visible = false
 PlayerNodePath = NodePath("../..")
 CameraNodePath = NodePath("..")
 HorizontalRotationNodePath = NodePath("../..")
 AimDownSightPosition = Vector3( 0, -0.4, -0.5 )
+
+[node name="EntityHealth" parent="." instance=ExtResource( 4 )]

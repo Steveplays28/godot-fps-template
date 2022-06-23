@@ -17,6 +17,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+ReferenceManager="*res://prefabs/autoload/reference_manager.tscn"
 UI="*res://prefabs/autoload/ui.tscn"
 Debug="*res://prefabs/autoload/debug.tscn"
 
