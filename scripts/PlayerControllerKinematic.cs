@@ -183,25 +183,28 @@ public class PlayerControllerKinematic : KinematicBody
 
 		Vector3 inputDirection = Vector3.Zero;
 		Vector3 cameraRotationDegrees = camera.RotationDegrees;
-		if (Input.IsActionPressed("move_forward"))
+		if (!IsSliding)
 		{
-			inputDirection -= Transform.basis.z;
-		}
-		if (Input.IsActionPressed("move_backwards"))
-		{
-			inputDirection += Transform.basis.z;
-		}
-		if (Input.IsActionPressed("move_right"))
-		{
-			inputDirection += Transform.basis.x;
+			if (Input.IsActionPressed("move_forward"))
+			{
+				inputDirection -= Transform.basis.z;
+			}
+			if (Input.IsActionPressed("move_backwards"))
+			{
+				inputDirection += Transform.basis.z;
+			}
+			if (Input.IsActionPressed("move_right"))
+			{
+				inputDirection += Transform.basis.x;
 
-			cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z - CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
-		}
-		if (Input.IsActionPressed("move_left"))
-		{
-			inputDirection -= Transform.basis.x;
+				cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z - CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
+			}
+			if (Input.IsActionPressed("move_left"))
+			{
+				inputDirection -= Transform.basis.x;
 
-			cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z + CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
+				cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z + CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
+			}
 		}
 		if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
 		{
