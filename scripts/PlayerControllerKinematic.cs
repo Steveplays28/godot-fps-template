@@ -11,6 +11,7 @@ public class PlayerControllerKinematic : KinematicBody
 	[Export(PropertyHint.Range, "0, 100")] public float AirAcceleration = 5f;
 	[Export(PropertyHint.Range, "0, 100")] public float Decceleration = 10f;
 	[Export(PropertyHint.Range, "0, 100")] public float AirDecceleration = 0.5f;
+	[Export(PropertyHint.Range, "0, 100")] public float SlideDecceleration = 0.5f;
 	[Export] public Vector2 Sensitivity = new Vector2(1f, 1f);
 	[Export] public float MaxVerticalRotation = 90f;
 	[Export] public float JumpLength = 0.25f;
@@ -211,8 +212,8 @@ public class PlayerControllerKinematic : KinematicBody
 		inputDirection = inputDirection.Normalized();
 		targetVelocity += inputDirection * maxMovementSpeed;
 
-		float decceleration = IsGrounded() ? Decceleration : AirDecceleration;
-		decceleration = IsSliding ? 0f : decceleration;
+		float decceleration = IsSliding ? SlideDecceleration : Decceleration;
+		decceleration = IsGrounded() ? decceleration : AirDecceleration;
 		if (inputDirection.x == 0f)
 		{
 			targetVelocity = new Vector3(Mathf.Lerp(targetVelocity.x, 0f, decceleration * delta), targetVelocity.y, targetVelocity.z);
