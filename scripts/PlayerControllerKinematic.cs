@@ -247,7 +247,6 @@ public class PlayerControllerKinematic : KinematicBody
 
 	private void Slide()
 	{
-		IsSliding = !IsSliding;
 		slideDirection = inputDirection;
 	}
 
