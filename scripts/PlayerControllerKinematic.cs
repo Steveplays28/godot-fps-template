@@ -38,6 +38,8 @@ public class PlayerControllerKinematic : KinematicBody
 	private float jumpTimeLeft;
 	private int jumpsLeft;
 	private Vector3 targetVelocity;
+	private Vector3 inputDirection;
+	private Vector3 slideDirection;
 
 	public override void _Ready()
 	{
@@ -54,30 +56,25 @@ public class PlayerControllerKinematic : KinematicBody
 		HandleMouseCursorVisibilityInput();
 		HandleRestartInput();
 
-		HandleGravity(delta);
+		ApplyGravity(delta);
+
 		HandleSlideInput();
-		HandleMovementInput(delta);
-		HandleJumpInput(delta);
-		HandleClimb();
+		HandleMovementInput();
+		Climb();
 
 		ApplyVelocity(delta);
 	}
 
-	public override void _Input(InputEvent inputEvent)
+	public override void _UnhandledInput(InputEvent inputEvent)
 	{
-		base._Input(inputEvent);
+		base._UnhandledInput(inputEvent);
 
 		// Mouse input
 		if (inputEvent is InputEventMouseMotion)
 		{
 			InputEventMouseMotion inputEventMouseMotion = inputEvent as InputEventMouseMotion;
 
-			camera.RotateX(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.y * Sensitivity.x));
-			RotateY(Mathf.Deg2Rad(-inputEventMouseMotion.Relative.x * Sensitivity.y));
-
-			Vector3 cameraRotationClamped = camera.RotationDegrees;
-			cameraRotationClamped.x = Mathf.Clamp(cameraRotationClamped.x, -MaxVerticalRotation, MaxVerticalRotation);
-			camera.RotationDegrees = cameraRotationClamped;
+			HandleMouseInput(inputEventMouseMotion);
 		}
 	}
 
@@ -91,20 +88,44 @@ public class PlayerControllerKinematic : KinematicBody
 		return Velocity.Rotated(Vector3.Up, Rotation.y);
 	}
 
+	private void ApplyGravity(float delta)
+	{
+		if (!IsGrounded())
+		{
+			targetVelocity += Gravity * Mass * GravityScale * delta;
+		}
+		else if (targetVelocity.y < 0f)
+		{
+			targetVelocity.y = 0f;
+			jumpsLeft = JumpAmount;
+		}
+	}
+
 	private void ApplyVelocity(float delta)
 	{
+		float maxMovementSpeed = Input.IsActionPressed("sprint") ? MaxSprintMovementSpeed : MaxMovementSpeed;
+		targetVelocity += inputDirection * maxMovementSpeed;
+
 		float acceleration = IsGrounded() ? Acceleration : AirAcceleration;
-		Velocity = new Vector3(Mathf.Lerp(Velocity.x, targetVelocity.x, acceleration * delta), targetVelocity.y, targetVelocity.z);
-		Velocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(Velocity.z, targetVelocity.z, acceleration * delta));
+		Velocity = new Vector3(Mathf.Lerp(Velocity.x, targetVelocity.x, acceleration * delta), targetVelocity.y, Mathf.Lerp(Velocity.z, targetVelocity.z, acceleration * delta));
 
-		if (IsJumping)
+		float decceleration = IsSliding ? SlideDecceleration : Decceleration;
+		decceleration = IsGrounded() ? decceleration : AirDecceleration;
+
+		if (inputDirection.Abs().x <= 0f)
 		{
-			Velocity = MoveAndSlide(Velocity, Transform.basis.y, true);
+			targetVelocity.x = Mathf.Lerp(targetVelocity.x, 0f, decceleration * delta);
 		}
-		else
+		if (inputDirection.Abs().z <= 0f)
 		{
-			Velocity = MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
+			targetVelocity.z = Mathf.Lerp(targetVelocity.z, 0f, decceleration * delta);
+		}
 
+		Velocity = IsJumping ? MoveAndSlide(Velocity, Transform.basis.y, true) : MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
+
+		// Animations
+		if (!IsJumping)
+		{
 			float idle_walk_blend_amount = (float)animationTree.Get("parameters/idle_walk_blend/blend_amount");
 			if (Velocity.Abs().Length() > 0.1f)
 			{
@@ -125,13 +146,13 @@ public class PlayerControllerKinematic : KinematicBody
 	{
 		if (Input.IsActionJustPressed("toggle_mouse_cursor_visibility"))
 		{
-			if (Input.GetMouseMode() == Input.MouseMode.Visible)
+			if (Input.MouseMode == Input.MouseModeEnum.Visible)
 			{
-				Input.SetMouseMode(Input.MouseMode.Captured);
+				Input.MouseMode = Input.MouseModeEnum.Captured;
 			}
 			else
 			{
-				Input.SetMouseMode(Input.MouseMode.Visible);
+				Input.MouseMode = Input.MouseModeEnum.Visible;
 			}
 		}
 	}
@@ -144,17 +165,19 @@ public class PlayerControllerKinematic : KinematicBody
 		}
 	}
 
-	private void HandleGravity(float delta)
+	private void HandleMouseInput(InputEventMouseMotion inputEventMouseMotion)
 	{
-		if (!IsGrounded())
-		{
-			targetVelocity += Gravity * Mass * GravityScale * delta;
-		}
-		else if (targetVelocity.y < 0f)
-		{
-			targetVelocity.y = 0f;
-			jumpsLeft = JumpAmount;
-		}
+		// Calculate mouse motion with sensitivity
+		Vector2 mouseMotion = new Vector2(-inputEventMouseMotion.Relative.y * Sensitivity.x, -inputEventMouseMotion.Relative.x * Sensitivity.y);
+
+		// Rotate camera and player
+		camera.RotateX(Mathf.Deg2Rad(mouseMotion.x));
+		RotateY(Mathf.Deg2Rad(mouseMotion.y));
+
+		// Clamp camera vertical rotation
+		Vector3 cameraRotationClamped = camera.RotationDegrees;
+		cameraRotationClamped.x = Mathf.Clamp(cameraRotationClamped.x, -MaxVerticalRotation, MaxVerticalRotation);
+		camera.RotationDegrees = cameraRotationClamped;
 	}
 
 	private void HandleSlideInput()
@@ -169,74 +192,33 @@ public class PlayerControllerKinematic : KinematicBody
 		}
 	}
 
-	private void HandleMovementInput(float delta)
+	private void HandleMovementInput()
 	{
-		float maxMovementSpeed;
-		if (Input.IsActionPressed("sprint"))
-		{
-			maxMovementSpeed = MaxSprintMovementSpeed;
-		}
-		else
-		{
-			maxMovementSpeed = MaxMovementSpeed;
-		}
-
-		Vector3 inputDirection = Vector3.Zero;
+		inputDirection = Vector3.Zero;
 		Vector3 cameraRotationDegrees = camera.RotationDegrees;
 		if (!IsSliding)
 		{
-			if (Input.IsActionPressed("move_forward"))
-			{
-				inputDirection -= Transform.basis.z;
-			}
-			if (Input.IsActionPressed("move_backwards"))
-			{
-				inputDirection += Transform.basis.z;
-			}
-			if (Input.IsActionPressed("move_right"))
-			{
-				inputDirection += Transform.basis.x;
+			inputDirection += (Input.IsActionPressed("move_backwards") ? Transform.basis.z : Vector3.Zero) + (Input.IsActionPressed("move_forward") ? -Transform.basis.z : Vector3.Zero);
+			inputDirection += (Input.IsActionPressed("move_right") ? Transform.basis.x : Vector3.Zero) + (Input.IsActionPressed("move_left") ? -Transform.basis.x : Vector3.Zero);
 
-				cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z - CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
-			}
-			if (Input.IsActionPressed("move_left"))
-			{
-				inputDirection -= Transform.basis.x;
-
-				cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z + CameraRollSpeed * maxMovementSpeed, -CameraRollMultiplier * maxMovementSpeed, CameraRollMultiplier * maxMovementSpeed), CameraRollSpeed);
-			}
+			cameraRotationDegrees.z = Mathf.Lerp(cameraRotationDegrees.z, Mathf.Clamp(cameraRotationDegrees.z + CameraRollSpeed * inputDirection.x, -CameraRollMultiplier, CameraRollMultiplier), CameraRollSpeed);
 		}
-		if (!Input.IsActionPressed("move_right") && !Input.IsActionPressed("move_left"))
-		{
-			cameraRotationDegrees.z = Mathf.Lerp(camera.RotationDegrees.z, 0f, CameraRollSpeed);
-		}
-
 		camera.RotationDegrees = cameraRotationDegrees;
-		inputDirection = inputDirection.Normalized();
-		targetVelocity += inputDirection * maxMovementSpeed;
 
-		float decceleration = IsSliding ? SlideDecceleration : Decceleration;
-		decceleration = IsGrounded() ? decceleration : AirDecceleration;
-		if (inputDirection.x == 0f)
+		if (Input.IsActionJustPressed("jump"))
 		{
-			targetVelocity = new Vector3(Mathf.Lerp(targetVelocity.x, 0f, decceleration * delta), targetVelocity.y, targetVelocity.z);
+			Jump();
+			GD.Print("jump");
 		}
-		if (inputDirection.z == 0f)
+		if (Input.IsActionJustPressed("slide"))
 		{
-			targetVelocity = new Vector3(targetVelocity.x, targetVelocity.y, Mathf.Lerp(targetVelocity.z, 0f, decceleration * delta));
-		}
-
-		if (targetVelocity.Length() > maxMovementSpeed)
-		{
-			float targetVelocityY = targetVelocity.y;
-			targetVelocity = targetVelocity.Normalized() * maxMovementSpeed;
-			targetVelocity.y = targetVelocityY;
+			Slide();
 		}
 	}
 
-	private void HandleJumpInput(float delta)
+	private void Jump()
 	{
-		if (Input.IsActionJustPressed("jump") && jumpsLeft > 0)
+		if (jumpsLeft > 0)
 		{
 			IsJumping = true;
 			jumpTimeLeft = JumpLength;
@@ -248,7 +230,7 @@ public class PlayerControllerKinematic : KinematicBody
 			if (jumpTimeLeft > 0)
 			{
 				targetVelocity = new Vector3(targetVelocity.x, JumpSpeed * jumpTimeLeft, targetVelocity.z);
-				jumpTimeLeft -= delta;
+				jumpTimeLeft -= GetProcessDeltaTime();
 			}
 			else
 			{
@@ -257,7 +239,13 @@ public class PlayerControllerKinematic : KinematicBody
 		}
 	}
 
-	private void HandleClimb()
+	private void Slide()
+	{
+		IsSliding = !IsSliding;
+		slideDirection = inputDirection;
+	}
+
+	private void Climb()
 	{
 		if (climbRayCast.IsColliding() && Mathf.Rad2Deg(climbRayCast.GetCollisionNormal().AngleTo(Vector3.Up)) >= 90f)
 		{
