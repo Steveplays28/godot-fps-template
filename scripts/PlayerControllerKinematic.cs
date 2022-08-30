@@ -103,12 +103,17 @@ public class PlayerControllerKinematic : KinematicBody
 
 	private void ApplyVelocity(float delta)
 	{
+		// Sprinting
 		float maxMovementSpeed = Input.IsActionPressed("sprint") ? MaxSprintMovementSpeed : MaxMovementSpeed;
+
+		// Apply movement target velocity
 		targetVelocity += inputDirection * maxMovementSpeed;
 
+		// Calculate acceleration
 		float acceleration = IsGrounded() ? Acceleration : AirAcceleration;
 		Velocity = new Vector3(Mathf.Lerp(Velocity.x, targetVelocity.x, acceleration * delta), targetVelocity.y, Mathf.Lerp(Velocity.z, targetVelocity.z, acceleration * delta));
 
+		// Calculate decceleration
 		float decceleration = IsSliding ? SlideDecceleration : Decceleration;
 		decceleration = IsGrounded() ? decceleration : AirDecceleration;
 
@@ -121,6 +126,7 @@ public class PlayerControllerKinematic : KinematicBody
 			targetVelocity.z = Mathf.Lerp(targetVelocity.z, 0f, decceleration * delta);
 		}
 
+		// Set velocity
 		Velocity = IsJumping ? MoveAndSlide(Velocity, Transform.basis.y, true) : MoveAndSlideWithSnap(Velocity, Transform.basis.y * -2f, Transform.basis.y, true);
 
 		// Animations
